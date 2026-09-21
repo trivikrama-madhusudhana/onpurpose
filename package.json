@@ -1,6 +1,6 @@
 {
-  "name": "idea-flow-youtube",
-  "version": "0.1.5",
+  "name": "onpurpose-youtube",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "description": "A desktop Chrome extension that filters YouTube recommendations against a user-defined goal using Jev.",
@@ -19,11 +19,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/trivikrama-madhusudhana/idea-flow.git"
+    "url": "https://github.com/trivikrama-madhusudhana/onpurpose.git"
   },
-  "homepage": "https://github.com/trivikrama-madhusudhana/idea-flow",
+  "homepage": "https://github.com/trivikrama-madhusudhana/onpurpose",
   "bugs": {
-    "url": "https://github.com/trivikrama-madhusudhana/idea-flow/issues"
+    "url": "https://github.com/trivikrama-madhusudhana/onpurpose/issues"
   },
   "keywords": [
     "chrome-extension",

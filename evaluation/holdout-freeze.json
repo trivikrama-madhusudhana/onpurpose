@@ -1,7 +1,7 @@
 {
   "frozenAt": "2026-09-21T13:02:04.407732+00:00",
-  "rubricVersion": "idea-flow-relevance-v4",
-  "adapterSha256": "aa921ef74124ee6d3831229794fed89c9e333227a7a2c679e97806a485cebb69",
+  "rubricVersion": "onpurpose-relevance-v4",
+  "adapterSha256": "f3be33b24f24e52760268d282ae32161f228a55b14ef753a6503fc7d3bb2f9d9",
   "corpusSha256": "0ce72a9244394453f8b298fb72cf19fa7ae52451115b161de70b25133477b791",
   "thresholds": {
     "tangentProbability": 0.8,
@@ -13,5 +13,10 @@
     "tangentsRemoved": 35,
     "tangentsTotal": 51
   },
-  "note": "Development removal target70% narrowly missed at68.6%. Selected conservative policy preserving all useful and unclear cards; do not represent target as passed. Holdout not yet queried. Retain this frozen policy regardless of holdout result."
+  "note": "Development removal target70% narrowly missed at68.6%. Selected conservative policy preserving all useful and unclear cards; do not represent target as passed. Holdout not yet queried. Retain this frozen policy regardless of holdout result.",
+  "preRenameAdapterSha256": "aa921ef74124ee6d3831229794fed89c9e333227a7a2c679e97806a485cebb69",
+  "brandNormalization": {
+    "version": "0.2.0",
+    "change": "Only the rubric name identifier changed in the included adapter. preRenameAdapterSha256 preserves the source hash recorded at the original freeze."
+  }
 }

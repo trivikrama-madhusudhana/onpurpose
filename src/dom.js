@@ -35,6 +35,6 @@
     return getVideoCards(scope).map(extractVideo).filter(Boolean);
   }
   const api = Object.freeze({firstNonEmptyText, videoURL, extractVideo, getVideoCards, extractVideos, text, CARD_SELECTORS});
-  globalThis.IdeaFlowDOM = api;
+  globalThis.OnPurposeDOM = api;
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
 })();

@@ -1,5 +1,5 @@
 {
-  "rubricVersion": "idea-flow-relevance-v1",
+  "rubricVersion": "onpurpose-relevance-v1",
   "note": "Historical UI positioning check before final v4 policy and goal-race fixes. Final v4 live results are in live-extension-results.json.",
   "checks": {
     "stickyBarAfterScroll": {

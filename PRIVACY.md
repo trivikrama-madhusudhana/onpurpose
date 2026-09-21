@@ -1,6 +1,6 @@
 # Data handling
 
-Idea Flow has no analytics, advertising, developer server, account system or telemetry.
+OnPurpose has no analytics, advertising, developer server, account system or telemetry.
 
 ## Stored locally
 

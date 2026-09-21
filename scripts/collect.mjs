@@ -63,7 +63,7 @@ async function main() {
       return page.evaluate(code => {
         // Identical extractor file to the extension, not a separate scraping heuristic.
         new Function(code)();
-        const results = globalThis.IdeaFlowDOM.extractVideos(document);
+        const results = globalThis.OnPurposeDOM.extractVideos(document);
         if (results.some(v => /^[\d:\s]+(?:Now playing)?$/.test(v.title))) throw new Error('Duration was extracted instead of a title.');
         return results.map((video, i) => ({ ...video, format: document.querySelector(`a[href^="/shorts/${video.id}"]`) ? 'short' : 'video', sourcePosition: i + 1 }));
       }, helperCode);

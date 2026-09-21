@@ -1,12 +1,12 @@
-# Install Idea Flow in Chrome
+# Install OnPurpose in Chrome
 
 You do not need to code or use a terminal. You need desktop Google Chrome and an OpenRouter account with an API key and available credits. Chrome on a phone and the YouTube phone app are not supported.
 
 ## 1. Download and extract
 
-1. Click [Download Idea Flow](https://github.com/trivikrama-madhusudhana/idea-flow/releases/latest/download/idea-flow-extension.zip).
+1. Click [Download OnPurpose](https://github.com/trivikrama-madhusudhana/onpurpose/releases/latest/download/onpurpose-extension.zip).
 2. Open the downloaded ZIP. On a Mac, double-click it. On Windows, right-click it and choose **Extract All**.
-3. Move the extracted `idea-flow-extension` folder somewhere you will keep it, such as Documents. Open it once and check that you can see a file named `manifest.json` and a folder named `src`.
+3. Move the extracted `onpurpose-extension` folder somewhere you will keep it, such as Documents. Open it once and check that you can see a file named `manifest.json` and a folder named `src`.
 
 Choose the extension ZIP above, not GitHub's automatically generated “Source code” ZIP. The extension ZIP contains only the files Chrome needs.
 
@@ -15,18 +15,18 @@ Choose the extension ZIP above, not GitHub's automatically generated “Source c
 1. Copy `chrome://extensions`, paste it into Chrome's address bar, and press Enter.
 2. Turn on **Developer mode** at the top right. This allows Chrome to load the open-source folder you downloaded.
 3. Click **Load unpacked** at the top left.
-4. Select the extracted `idea-flow-extension` folder that contains `manifest.json`. Select the folder, not the ZIP or the `src` folder.
-5. Check that an **Idea Flow** card appears and its switch is on.
-6. Click Chrome's puzzle-piece Extensions icon, then the pin next to Idea Flow so it stays easy to find.
+4. Select the extracted `onpurpose-extension` folder that contains `manifest.json`. Select the folder, not the ZIP or the `src` folder.
+5. Check that an **OnPurpose** card appears and its switch is on.
+6. Click Chrome's puzzle-piece Extensions icon, then the pin next to OnPurpose so it stays easy to find.
 
 Do not move or delete the extracted folder after installation. This is a manually installed extension, so updates are manual too. A work-managed browser may prevent this installation; ask your administrator rather than trying to bypass that restriction.
 
 ## 3. Add your OpenRouter key
 
 1. Open [OpenRouter's API keys page](https://openrouter.ai/settings/keys) and sign in or create your account.
-2. Create an API key. Give it a recognisable name such as “Idea Flow” and set a spending limit if offered. Copy the key. Keep it private.
+2. Create an API key. Give it a recognisable name such as “OnPurpose” and set a spending limit if offered. Copy the key. Keep it private.
 3. Make sure your OpenRouter account has available credits and access to Jev. The extension is free; model requests use your credits.
-4. Click Idea Flow in the Chrome toolbar. The first click opens **Settings and usage**.
+4. Click OnPurpose in the Chrome toolbar. The first click opens **Settings and usage**.
 5. Paste the key into **New API key**, then choose **Save key**. The field clears after saving; that is expected.
 
 The key stays in this Chrome profile. It is sent to OpenRouter to authenticate requests and is not given to YouTube. You can replace or remove it in Settings and usage.
@@ -46,13 +46,13 @@ While watching a video, **Save video** saves its playback position. Click **Vide
 
 ## Update
 
-Download the new extension ZIP from [Releases](https://github.com/trivikrama-madhusudhana/idea-flow/releases/latest). Replace the files inside your existing extension folder with the new files. Keep the same folder path. Open `chrome://extensions`, click the reload arrow on the Idea Flow card, then refresh YouTube. Your saved key and bookmarks remain in Chrome storage. Do not remove and reinstall the extension just to update it.
+Download the new extension ZIP from [Releases](https://github.com/trivikrama-madhusudhana/onpurpose/releases/latest). Replace the files inside your existing extension folder with the new files. Keep the same folder path. Open `chrome://extensions`, click the reload arrow on the OnPurpose card, then refresh YouTube. Your saved key and bookmarks remain in Chrome storage. Do not remove and reinstall the extension just to update it.
 
 ## Troubleshooting
 
 | What you see | What to do |
 |---|---|
-| No goal bar | Refresh YouTube. Check that Idea Flow is enabled at `chrome://extensions` and that the address starts with `https://www.youtube.com/`. The popup also offers Refresh YouTube. |
+| No goal bar | Refresh YouTube. Check that OnPurpose is enabled at `chrome://extensions` and that the address starts with `https://www.youtube.com/`. The popup also offers Refresh YouTube. |
 | “Manifest file is missing” | Extract the ZIP first. Select the folder that directly contains `manifest.json`. |
 | Settings keeps asking for a key | Save a key and check for an error message. Chrome profiles have separate settings. |
 | OpenRouter rejects the key | Open Settings and usage, paste the complete key again, and save it. Check OpenRouter if it was revoked. |
@@ -64,6 +64,6 @@ Download the new extension ZIP from [Releases](https://github.com/trivikrama-mad
 
 ## Remove it
 
-Open `chrome://extensions`, find Idea Flow, and choose **Remove**. Removing the extension also removes its locally stored key, goal, bookmarks and usage totals. You can revoke its API key separately on OpenRouter.
+Open `chrome://extensions`, find OnPurpose, and choose **Remove**. Removing the extension also removes its locally stored key, goal, bookmarks and usage totals. You can revoke its API key separately on OpenRouter.
 
-For help, [open an issue](https://github.com/trivikrama-madhusudhana/idea-flow/issues) with your Chrome version, extension version and what went wrong. Never include your API key. Hide personal information before attaching screenshots.
+For help, [open an issue](https://github.com/trivikrama-madhusudhana/onpurpose/issues) with your Chrome version, extension version and what went wrong. Never include your API key. Hide personal information before attaching screenshots.

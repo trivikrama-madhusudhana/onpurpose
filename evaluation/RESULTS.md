@@ -1,4 +1,4 @@
-# Idea Flow: relevance evaluation results
+# OnPurpose: relevance evaluation results
 
 **The frozen prototype preserved every reference-useful and uncertain card in this sample while collapsing 70 of 99 tangents. It did not meet every predeclared acceptance target.** Development distraction removal was 68.6%, below the 70% target; held-out distraction removal was 72.9%, above it. This supports a conservative prototype, not a claim that Jev always returns the right answer or that all 15 searches are equally well validated.
 
@@ -12,7 +12,7 @@ A separate assistant annotated all final metadata without viewing Jev prediction
 
 ## Frozen filtering policy
 
-The final adapter version is `idea-flow-relevance-v4`, using OpenRouter's Jev typed decisions endpoint and resolved model `typesafe/jev-1.13-20260917`. Two typed questions assess relevance and whether collapsing the card is appropriate. A card is collapsed only when all three conditions hold:
+The final adapter version is `onpurpose-relevance-v4`, using OpenRouter's Jev typed decisions endpoint and resolved model `typesafe/jev-1.13-20260917`. Two typed questions assess relevance and whether collapsing the card is appropriate. A card is collapsed only when all three conditions hold:
 
 - Its selected relevance label is `tangent`.
 - The explicit probability assigned to `tangent` is at least 0.8.
@@ -113,3 +113,5 @@ The current automated suite passes 62 tests. These include consistent outside-go
 ## Public release 0.1.5
 
 All 63 offline tests pass, including the regression for modern watch-page recommendation badge placement. The cramped layout was observed on actual YouTube in the previously loaded extension. The corrected layout still needs a fresh live check after reloading the unpacked extension.
+
+Brand identifiers in the frozen evaluation were normalized for version 0.2.0. Recorded classification results, prompts, usage and scores are unchanged.

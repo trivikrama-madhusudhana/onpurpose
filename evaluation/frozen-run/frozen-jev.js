@@ -1,6 +1,6 @@
 /** Typed, metadata-only relevance decisions. Shared by extension and evaluation. */
 export const CLASSIFICATIONS = Object.freeze(['direct', 'background', 'tangent', 'unclear']);
-export const RUBRIC_VERSION = 'idea-flow-relevance-v4';
+export const RUBRIC_VERSION = 'onpurpose-relevance-v4';
 export const MODEL = '~typesafe/jev-latest';
 export const ENDPOINT = 'https://openrouter.ai/api/alpha/decisions';
 

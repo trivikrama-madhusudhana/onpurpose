@@ -43,6 +43,6 @@
   },
   "elapsedMs": 555,
   "cached": true,
-  "rubricVersion": "idea-flow-relevance-v4",
-  "reparsedFrom": "idea-flow-relevance-v2"
+  "rubricVersion": "onpurpose-relevance-v4",
+  "reparsedFrom": "onpurpose-relevance-v2"
 }

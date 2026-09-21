@@ -1,8 +1,10 @@
-# Idea Flow
+<p><img src="icons/onpurpose.svg" alt="OnPurpose logo" width="80" height="80"></p>
 
-Idea Flow is a desktop Chrome extension that filters YouTube recommendations against the problem you came to solve. Enter a goal, and Jev labels the available video metadata, hiding clear distractions behind a Reveal button.
+# OnPurpose
 
-[Download the extension](https://github.com/trivikrama-madhusudhana/idea-flow/releases/latest/download/idea-flow-extension.zip) · [Installation guide](docs/INSTALL.md) · [Report a problem](https://github.com/trivikrama-madhusudhana/idea-flow/issues)
+OnPurpose is a desktop Chrome extension that filters YouTube recommendations against the problem you came to solve. Enter a goal, and Jev labels the available video metadata, hiding clear distractions behind a Reveal button.
+
+[Download the extension](https://github.com/trivikrama-madhusudhana/onpurpose/releases/latest/download/onpurpose-extension.zip) · [Installation guide](docs/INSTALL.md) · [Report a problem](https://github.com/trivikrama-madhusudhana/onpurpose/issues)
 
 The extension is free and open source. You need your own OpenRouter API key, and OpenRouter charges for model usage. It works on desktop Chrome at `www.youtube.com`; it does not run in the YouTube phone app. It is not listed in the Chrome Web Store yet.
 
@@ -29,7 +31,7 @@ Jev reads titles, channel names and available descriptions. It does not watch th
 
 ## Install without coding
 
-Download [idea-flow-extension.zip](https://github.com/trivikrama-madhusudhana/idea-flow/releases/latest/download/idea-flow-extension.zip), extract it, and load the extracted folder in Chrome using **Load unpacked** at `chrome://extensions`. No terminal, Node.js or build step is needed. The [installation guide](docs/INSTALL.md) walks through every click, API key setup, updates and common problems.
+Download [onpurpose-extension.zip](https://github.com/trivikrama-madhusudhana/onpurpose/releases/latest/download/onpurpose-extension.zip), extract it, and load the extracted folder in Chrome using **Load unpacked** at `chrome://extensions`. No terminal, Node.js or build step is needed. The [installation guide](docs/INSTALL.md) walks through every click, API key setup, updates and common problems.
 
 Keep the extracted folder somewhere permanent. Chrome reads the extension from that folder. On the first toolbar click, enter your OpenRouter key. Refresh YouTube, enter your goal in the bar below its search box, then choose **Set goal**.
 

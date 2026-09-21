@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Idea Flow",
-  "version": "0.1.5",
+  "name": "OnPurpose",
+  "version": "0.2.0",
   "description": "Filter YouTube recommendations against your goal using Jev and your own OpenRouter API key.",
   "permissions": [
     "storage"
@@ -31,13 +31,23 @@
   ],
   "options_page": "src/options.html",
   "action": {
-    "default_title": "Idea Flow",
-    "default_popup": "src/popup.html"
+    "default_title": "OnPurpose",
+    "default_popup": "src/popup.html",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png"
+    }
   },
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self'"
   },
   "author": "Trivikrama Madhusudhana",
-  "homepage_url": "https://github.com/trivikrama-madhusudhana/idea-flow",
-  "minimum_chrome_version": "102"
+  "homepage_url": "https://github.com/trivikrama-madhusudhana/onpurpose",
+  "minimum_chrome_version": "102",
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  }
 }

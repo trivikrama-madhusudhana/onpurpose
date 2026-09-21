@@ -29,7 +29,7 @@ async function setup({url = 'https://www.youtube.com/results?search_query=nextjs
   w.eval(domSource);
   w.eval(source);
   await sleep(380);
-  return {dom, w, messages, listeners, root: w.document.getElementById('idea-flow-root')?.shadowRoot, card: w.document.querySelector('ytd-video-renderer')};
+  return {dom, w, messages, listeners, root: w.document.getElementById('onpurpose-root')?.shadowRoot, card: w.document.querySelector('ytd-video-renderer')};
 }
 
 test('video IDs accept only YouTube watch/shorts URLs', () => {
@@ -67,27 +67,27 @@ test('script does not mount or message outside YouTube', async () => {
 
 test('tangent replacement is reversible and pause restores original cards', async () => {
   const env = await setup(); await sleep(370);
-  assert.equal(env.card.classList.contains('idea-flow-collapsed'), true);
-  const reveal = [...env.w.document.querySelectorAll('.idea-flow-placeholder button')].find(b => b.textContent === 'Reveal video');
-  reveal.click(); assert.equal(env.card.classList.contains('idea-flow-collapsed'), false);
-  assert.ok(env.w.document.querySelector('.idea-flow-badge'));
+  assert.equal(env.card.classList.contains('onpurpose-collapsed'), true);
+  const reveal = [...env.w.document.querySelectorAll('.onpurpose-placeholder button')].find(b => b.textContent === 'Reveal video');
+  reveal.click(); assert.equal(env.card.classList.contains('onpurpose-collapsed'), false);
+  assert.ok(env.w.document.querySelector('.onpurpose-badge'));
   env.root.querySelector('#pause').click(); await sleep(20);
-  assert.equal(env.card.classList.contains('idea-flow-collapsed'), false);
-  assert.equal(env.w.document.querySelector('.idea-flow-badge'),null);
+  assert.equal(env.card.classList.contains('onpurpose-collapsed'), false);
+  assert.equal(env.w.document.querySelector('.onpurpose-badge'),null);
   env.dom.window.close();
 });
 
 test('missing key preserves videos and never calls classification', async () => {
   const env = await setup({state:{hasKey:false}});
   assert.equal(env.messages.some(m => m.type === 'CLASSIFY'),false);
-  assert.equal(env.card.classList.contains('idea-flow-collapsed'),false);
+  assert.equal(env.card.classList.contains('onpurpose-collapsed'),false);
   assert.match(env.root.querySelector('#status-text').textContent,/Add your OpenRouter key/);
   env.dom.window.close();
 });
 
 test('API errors fail open and offer retry rather than silently hiding cards', async () => {
   const env = await setup({handler:m => m.type === 'CLASSIFY' ? {error:'Service unavailable'} : undefined});
-  assert.equal(env.card.classList.contains('idea-flow-collapsed'),false);
+  assert.equal(env.card.classList.contains('onpurpose-collapsed'),false);
   assert.match(env.root.querySelector('#status-text').textContent,/Service unavailable/);
   assert.equal(env.root.querySelector('#retry').hidden,false);
   env.dom.window.close();
@@ -103,8 +103,8 @@ test('late results from the previous goal cannot collapse a card', async () => {
   env.root.querySelector('#goal').value = 'Learn App Router';
   env.root.querySelector('form').dispatchEvent(new env.w.Event('submit', {bubbles:true,cancelable:true}));
   await sleep(20); release(); await sleep(700);
-  assert.equal(env.card.classList.contains('idea-flow-collapsed'),false);
-  assert.equal(env.w.document.querySelector('.idea-flow-badge summary')?.textContent,'Relevant to your goal');
+  assert.equal(env.card.classList.contains('onpurpose-collapsed'),false);
+  assert.equal(env.w.document.querySelector('.onpurpose-badge summary')?.textContent,'Relevant to your goal');
   env.dom.window.close();
 });
 
@@ -136,7 +136,7 @@ test('watch recommendations keep relevance labels inside the modern metadata tex
     env.root.querySelector('#pause').click();
     await sleep(750);
     const metadata = card.querySelector('yt-lockup-metadata-view-model');
-    const badge = card.querySelector('.idea-flow-badge');
+    const badge = card.querySelector('.onpurpose-badge');
     assert.ok(badge);
     assert.equal(badge.parentElement, card.querySelector('.ytLockupMetadataViewModelTextContainer'));
     assert.equal(metadata.children.length, 3, 'A badge must not become a fourth horizontal column');
@@ -157,33 +157,33 @@ test('nonempty search snippets win over empty hidden description nodes', () => {
 
 test('a collapsed renderer reused for unsupported content becomes visible', async () => {
   const env = await setup(); await sleep(370);
-  assert.equal(env.card.classList.contains('idea-flow-collapsed'), true);
+  assert.equal(env.card.classList.contains('onpurpose-collapsed'), true);
   env.card.innerHTML = '<a href="/playlist?list=abc">A playlist now</a>';
   await sleep(400);
-  assert.equal(env.card.classList.contains('idea-flow-collapsed'), false);
-  assert.equal(env.w.document.querySelector('.idea-flow-placeholder'), null);
+  assert.equal(env.card.classList.contains('onpurpose-collapsed'), false);
+  assert.equal(env.w.document.querySelector('.onpurpose-placeholder'), null);
   env.dom.window.close();
 });
 
 test('BFCache restoration resumes observation and refreshes state', async () => {
   const env = await setup(); await sleep(370);
   env.w.dispatchEvent(new env.w.PageTransitionEvent('pagehide', {persisted:true}));
-  assert.equal(env.card.classList.contains('idea-flow-collapsed'), false);
+  assert.equal(env.card.classList.contains('onpurpose-collapsed'), false);
   const before = env.messages.filter(m => m.type === 'GET_STATE').length;
   env.w.dispatchEvent(new env.w.PageTransitionEvent('pageshow', {persisted:true}));
   await sleep(400);
   assert.ok(env.messages.filter(m => m.type === 'GET_STATE').length > before);
-  assert.equal(env.card.classList.contains('idea-flow-collapsed'), true);
+  assert.equal(env.card.classList.contains('onpurpose-collapsed'), true);
   env.card.innerHTML = '<div>Unsupported replacement</div>';
   await sleep(400);
-  assert.equal(env.card.classList.contains('idea-flow-collapsed'), false);
+  assert.equal(env.card.classList.contains('onpurpose-collapsed'), false);
   env.dom.window.close();
 });
 
 
 test('Shorts wrappers produce one video and do not confuse views with channel', () => {
   const dom = new JSDOM(`<ytm-shorts-lockup-view-model-v2><ytm-shorts-lockup-view-model class="shortsLockupViewModelHost"><a href="/shorts/xyzABC12345"><img alt="Thumbnail"></a><h3 class="shortsLockupViewModelHostMetadataTitle"><a title="A short useful fix" href="/shorts/xyzABC12345">A short useful fix</a></h3><span>12K views</span></ytm-shorts-lockup-view-model></ytm-shorts-lockup-view-model-v2>`);
-  const videos = context.IdeaFlowDOM.extractVideos(dom.window.document);
+  const videos = context.OnPurposeDOM.extractVideos(dom.window.document);
   assert.equal(videos.length, 1);
   assert.equal(videos[0].title, 'A short useful fix');
   assert.equal(videos[0].channel, '');
@@ -199,7 +199,7 @@ test('ongoing page mutation does not starve the scheduled scan', async () => {
   }, 30);
   await sleep(750); clearInterval(interval);
   assert.ok(env.messages.some(m => m.type === 'CLASSIFY'));
-  assert.equal(env.card.classList.contains('idea-flow-collapsed'), true);
+  assert.equal(env.card.classList.contains('onpurpose-collapsed'), true);
   env.dom.window.close();
 });
 
@@ -213,9 +213,9 @@ test('missing or invalid probability gates never fall back to legacy concentrati
   assert.equal(shouldCollapse({label:'tangent',confidence:.2,tangentProbability:.8,collapseProbability:.7},false,false),true);
   const env = await setup({handler:m => m.type === 'CLASSIFY' ? {results:[{id:'abcDEF12345',label:'tangent',confidence:.999}]} : undefined});
   await sleep(370);
-  assert.equal(env.card.classList.contains('idea-flow-collapsed'), false);
-  assert.equal(env.w.document.querySelector('.idea-flow-placeholder'), null);
-  assert.equal(env.w.document.querySelector('.idea-flow-badge summary')?.textContent, 'Relevance uncertain');
+  assert.equal(env.card.classList.contains('onpurpose-collapsed'), false);
+  assert.equal(env.w.document.querySelector('.onpurpose-placeholder'), null);
+  assert.equal(env.w.document.querySelector('.onpurpose-badge summary')?.textContent, 'Relevance uncertain');
   env.dom.window.close();
 });
 
@@ -232,7 +232,7 @@ test('same-goal resubmit invalidates pending classification errors', async () =>
   assert.equal(env.root.querySelector('#retry').hidden, true);
   assert.doesNotMatch(env.root.querySelector('#status-text').textContent, /Session changed/);
   assert.ok(classifyCount >= 2);
-  assert.equal(env.card.classList.contains('idea-flow-collapsed'), true);
+  assert.equal(env.card.classList.contains('onpurpose-collapsed'), true);
   env.dom.window.close();
 });
 
@@ -318,7 +318,7 @@ test('saving the current video and removing it never pauses filtering', async ()
 test('bar follows YouTube theme and page inset, and relevance labels explain uncertainty', async () => {
   const env=await setup({handler:message=>message.type==='CLASSIFY'?{results:message.videos.map(v=>({id:v.id,label:'unclear',confidence:.9,tangentProbability:0,collapseProbability:0}))}:undefined});
   await sleep(380);
-  assert.match(env.w.document.querySelector('.idea-flow-badge p').textContent,/not enough to judge/);
+  assert.match(env.w.document.querySelector('.onpurpose-badge p').textContent,/not enough to judge/);
   env.w.document.documentElement.setAttribute('dark','');await sleep(40);
   assert.equal(env.root.host.dataset.theme,'dark');
   env.w.document.documentElement.removeAttribute('dark');await sleep(40);
@@ -346,25 +346,25 @@ test('show off-topic reveals all cards and hide off-topic resets individual reve
     const second = holder.querySelector('ytd-video-renderer');
     env.card.parentElement.append(second);
     await sleep(700);
-    const hidden = () => env.w.document.querySelectorAll('.idea-flow-collapsed').length;
-    const placeholders = () => env.w.document.querySelectorAll('.idea-flow-placeholder').length;
+    const hidden = () => env.w.document.querySelectorAll('.onpurpose-collapsed').length;
+    const placeholders = () => env.w.document.querySelectorAll('.onpurpose-placeholder').length;
     assert.equal(hidden(),2); assert.equal(placeholders(),2);
-    env.w.document.querySelector('.idea-flow-placeholder button').click();
+    env.w.document.querySelector('.onpurpose-placeholder button').click();
     assert.equal(hidden(),1);
     const toggle = env.root.querySelector('#tangents');
     toggle.click(); await sleep(370);
     assert.equal(hidden(),0); assert.equal(placeholders(),0);
     assert.equal(toggle.textContent,'Hide off-topic');
-    assert.equal(env.w.document.querySelectorAll('.idea-flow-badge.idea-flow-tangent').length,2);
+    assert.equal(env.w.document.querySelectorAll('.onpurpose-badge.onpurpose-tangent').length,2);
     // New results respect the active Show off-topic setting too.
     holder.innerHTML = fixture.replaceAll('abcDEF12345','newABC12345');
     const third = holder.querySelector('ytd-video-renderer');
     env.card.parentElement.append(third); await sleep(700);
     assert.equal(hidden(),0);
-    assert.equal(env.w.document.querySelectorAll('.idea-flow-badge.idea-flow-tangent').length,3);
+    assert.equal(env.w.document.querySelectorAll('.onpurpose-badge.onpurpose-tangent').length,3);
     toggle.click(); await sleep(370);
     assert.equal(hidden(),3); assert.equal(placeholders(),3);
     assert.equal(toggle.textContent,'Show off-topic');
-    assert.equal(env.w.document.querySelectorAll('.idea-flow-badge.idea-flow-tangent').length,0);
+    assert.equal(env.w.document.querySelectorAll('.onpurpose-badge.onpurpose-tangent').length,0);
   } finally { env.dom.window.close(); }
 });

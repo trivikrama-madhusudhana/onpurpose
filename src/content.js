@@ -1,8 +1,8 @@
-/* Idea Flow: isolated, YouTube-only content UI. No credentials enter this script. */
+/* OnPurpose: isolated, YouTube-only content UI. No credentials enter this script. */
 (() => {
   'use strict';
   const LABELS = new Set(['direct', 'background', 'tangent', 'unclear']);
-  const {videoURL, extractVideo, getVideoCards, text, CARD_SELECTORS} = globalThis.IdeaFlowDOM;
+  const {videoURL, extractVideo, getVideoCards, text, CARD_SELECTORS} = globalThis.OnPurposeDOM;
   function metadataKey(goal, video) {
     return JSON.stringify([goal, video.id, video.title, video.channel, video.description || '']);
   }
@@ -15,7 +15,7 @@
   }
   // Pure helpers are also exercised by the local Node test suite.
   if (typeof module !== 'undefined' && module.exports) module.exports = {videoURL, extractVideo, metadataKey, shouldCollapse, displayLabel, CARD_SELECTORS};
-  if (typeof document === 'undefined' || location.origin !== 'https://www.youtube.com' || window.top !== window || document.getElementById('idea-flow-root')) return;
+  if (typeof document === 'undefined' || location.origin !== 'https://www.youtube.com' || window.top !== window || document.getElementById('onpurpose-root')) return;
 
   let state = {goal: '', active: false, hasKey: false, saved: [], usage: {}};
   let epoch = 0, busy = false, scanTimer, refreshTimer, destroyed = false;
@@ -24,19 +24,19 @@
   const decisions = new Map(), inflight = new Set(), records = new Map();
   const MAX_LOCAL_CACHE = 1500;
   const host = document.createElement('div');
-  host.id = 'idea-flow-root';
+  host.id = 'onpurpose-root';
   const root = host.attachShadow({mode: 'open'});
   root.innerHTML = `
     <style>
       :host{all:initial;--surface:#f7faf8;--text:#17392d;--muted:#465d53;--line:#b8c9bf;--field:#fff;--accent:#215c40;--on-accent:#fff;--hover:#e5eee8;--error:#9d2b1c;color-scheme:light;display:block;font:14px/1.45 system-ui,-apple-system,sans-serif;color:var(--text)}
       :host([data-theme="dark"]){--surface:#18241f;--text:#edf5f0;--muted:#c0d1c6;--line:#60796b;--field:#111c16;--accent:#a0e2b9;--on-accent:#102c1b;--hover:#2a3c31;--error:#ffc3b6;color-scheme:dark}
       *{box-sizing:border-box}button,input{font:inherit}button{cursor:pointer;border:1px solid var(--line);border-radius:7px;min-height:36px;padding:7px 12px;background:var(--surface);color:var(--text);white-space:nowrap}button:hover{background:var(--hover)}button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}button:disabled{cursor:default;opacity:.6}input::placeholder{color:var(--muted);opacity:1}::selection{background:var(--accent);color:var(--on-accent)}
-      .bar{padding:12px 20px;background:var(--surface);border-bottom:1px solid var(--line)}.goal-row{display:flex;gap:18px;align-items:center;min-width:0}.brand{font-weight:750;font-size:16px;white-space:nowrap}.goal-form{display:flex;gap:8px;align-items:end;flex:1;min-width:0}.goal-field{flex:1;min-width:0}.goal-field label{display:block;font-size:12px;font-weight:650;margin-bottom:4px;color:var(--muted)}input{display:block;width:100%;min-width:0;background:var(--field);border:1px solid var(--line);border-radius:7px;padding:8px 10px;color:var(--text);caret-color:var(--text)}.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:650}.primary:hover{background:var(--accent);filter:brightness(.95)}
+      .bar{padding:12px 20px;background:var(--surface);border-bottom:1px solid var(--line)}.goal-row{display:flex;gap:18px;align-items:center;min-width:0}.brand{display:flex;align-items:center;gap:9px;font-weight:750;font-size:16px;white-space:nowrap}.brand-mark{flex:none}.goal-form{display:flex;gap:8px;align-items:end;flex:1;min-width:0}.goal-field{flex:1;min-width:0}.goal-field label{display:block;font-size:12px;font-weight:650;margin-bottom:4px;color:var(--muted)}input{display:block;width:100%;min-width:0;background:var(--field);border:1px solid var(--line);border-radius:7px;padding:8px 10px;color:var(--text);caret-color:var(--text)}.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:650}.primary:hover{background:var(--accent);filter:brightness(.95)}
       .session-row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:10px}.actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.status{color:var(--muted);font-size:13px;display:flex;align-items:center;gap:8px;flex:1;min-width:200px}.status.error{color:var(--error)}.status button{min-height:30px;padding:3px 8px}.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);color:var(--text);padding:12px 18px;border:1px solid var(--line);border-radius:10px;max-width:min(540px,90vw);box-shadow:0 6px 24px #0003;z-index:2200}.help-link{background:transparent}
-      [hidden]{display:none!important}@media(max-width:1050px){.goal-row{gap:12px}.bar{padding:12px 16px}.status{flex-basis:100%}.actions{width:100%}}@media(max-width:650px){.goal-row{display:block}.brand{display:block;margin-bottom:8px}.goal-form{align-items:end}.actions{gap:6px}button{padding:7px 9px}}
+      [hidden]{display:none!important}@media(max-width:1050px){.goal-row{gap:12px}.bar{padding:12px 16px}.status{flex-basis:100%}.actions{width:100%}}@media(max-width:650px){.goal-row{display:block}.brand{display:flex;margin-bottom:8px}.goal-form{align-items:end}.actions{gap:6px}button{padding:7px 9px}}
     </style>
-    <section class="bar" aria-label="Idea Flow YouTube focus">
-      <div class="goal-row"><span class="brand">Idea Flow</span>
+    <section class="bar" aria-label="OnPurpose YouTube focus">
+      <div class="goal-row"><span class="brand"><svg class="brand-mark" aria-hidden="true" width="28" height="28" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#E85D26"/><g fill="none" stroke="#111111" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 25V20Q16 16 20 16H25"/><path d="M39 16H44Q48 16 48 20V25"/><path d="M48 39V44Q48 48 44 48H39"/><path d="M25 48H20Q16 48 16 44V39"/></g><path d="M27 23L41 32L27 41Z" fill="#111111" stroke="#111111" stroke-width="2" stroke-linejoin="round"/></svg><span>OnPurpose</span></span>
         <form class="goal-form"><div class="goal-field"><label for="goal">Your YouTube goal</label><input id="goal" maxlength="600" placeholder="What are you here to figure out?" autocomplete="off"></div><button class="primary" id="set-goal" type="submit">Set goal</button></form>
       </div>
       <div class="session-row">
@@ -53,8 +53,8 @@
     const parentLeft = host.parentElement?.getBoundingClientRect().left || 0;
     const inset = Math.max(0, (page?.getBoundingClientRect().left || 0) - parentLeft);
     const headerHeight = Math.max(0, masthead?.getBoundingClientRect().height || 56);
-    host.style.setProperty('--idea-flow-inset', `${inset}px`);
-    host.style.setProperty('--idea-flow-header', `${headerHeight}px`);
+    host.style.setProperty('--onpurpose-inset', `${inset}px`);
+    host.style.setProperty('--onpurpose-header', `${headerHeight}px`);
     host.dataset.theme = document.documentElement.hasAttribute('dark') ? 'dark' : 'light';
   }
   function scheduleLayout() { if (!layoutFrame) layoutFrame = requestAnimationFrame(syncLayout); }
@@ -112,7 +112,7 @@
     $('#retry').hidden = !lastError;
   }
   function restoreRecord(record) {
-    record.card.classList.remove('idea-flow-collapsed');
+    record.card.classList.remove('onpurpose-collapsed');
     record.placeholder?.remove(); record.placeholder = null;
     record.badge?.remove(); record.badge = null;
   }
@@ -192,11 +192,11 @@
     if (!ready() || !result || !LABELS.has(result.label)) return;
     const visibleLabel = displayLabel(result);
     if (shouldCollapse(result, showTangents, record.revealed)) {
-      const placeholder = document.createElement('div'); placeholder.className = 'idea-flow-placeholder idea-flow-tangent';
+      const placeholder = document.createElement('div'); placeholder.className = 'onpurpose-placeholder onpurpose-tangent';
       placeholder.setAttribute('role', 'group'); placeholder.setAttribute('aria-label', 'Video outside your current goal');
-      const label = document.createElement('div'); label.className = 'idea-flow-placeholder-label';
+      const label = document.createElement('div'); label.className = 'onpurpose-placeholder-label';
       const heading = document.createElement('strong'); heading.textContent = 'Outside your goal';
-      const title = document.createElement('span'); title.className = 'idea-flow-hidden-title'; title.textContent = record.video.title;
+      const title = document.createElement('span'); title.className = 'onpurpose-hidden-title'; title.textContent = record.video.title;
       label.append(heading, title);
       const save = makeButton(state.saved.some(video => video.id === record.video.id) ? 'Saved' : 'Save for later', async () => {
         const alreadySaved = state.saved.some(video => video.id === record.video.id);
@@ -210,9 +210,9 @@
       save.setAttribute('aria-pressed', String(state.saved.some(video => video.id === record.video.id)));
       placeholder.append(label, makeButton('Reveal video', () => { record.revealed = true; paint(record, result); }), save);
       record.card.insertAdjacentElement('afterend', placeholder); record.placeholder = placeholder;
-      record.card.classList.add('idea-flow-collapsed');
+      record.card.classList.add('onpurpose-collapsed');
     } else {
-      const badge = document.createElement('details'); badge.className = `idea-flow-badge idea-flow-${visibleLabel}`;
+      const badge = document.createElement('details'); badge.className = `onpurpose-badge onpurpose-${visibleLabel}`;
       const labels = {direct:'Relevant to your goal',background:'Useful background',tangent:'Outside your goal',unclear:'Relevance uncertain'};
       const explanations = {direct:'The title or description suggests help with your goal. The video itself has not been checked.',background:'This may explain a prerequisite or related skill. It may not solve the whole problem.',tangent:'The title or description points to a different task. You can still choose to watch it.',unclear:'The available title and description are not enough to judge. This video stays visible.'};
       const summary = document.createElement('summary'); summary.textContent = labels[visibleLabel];
@@ -228,7 +228,7 @@
   }
   function nearViewport(card) {
     // Collapsed cards have no box; retain their existing decisions without new requests.
-    if (card.classList.contains('idea-flow-collapsed')) return false;
+    if (card.classList.contains('onpurpose-collapsed')) return false;
     const rect = card.getBoundingClientRect();
     return rect.width > 0 && rect.height > 0 && rect.bottom > -400 && rect.top < innerHeight + 1000;
   }
@@ -289,7 +289,7 @@
   }
   const observer = new MutationObserver(mutations => {
     // Ignore our own badges and placeholders to avoid self-triggering scan loops.
-    if (mutations.some(m => !host.contains(m.target) && !m.target.parentElement?.closest?.('.idea-flow-placeholder,.idea-flow-badge') && !m.target.closest?.('.idea-flow-placeholder,.idea-flow-badge') && (m.type !== 'childList' || [...m.addedNodes, ...m.removedNodes].some(n => n.nodeType !== 1 || !n.className?.toString().startsWith('idea-flow-'))))) scheduleScan();
+    if (mutations.some(m => !host.contains(m.target) && !m.target.parentElement?.closest?.('.onpurpose-placeholder,.onpurpose-badge') && !m.target.closest?.('.onpurpose-placeholder,.onpurpose-badge') && (m.type !== 'childList' || [...m.addedNodes, ...m.removedNodes].some(n => n.nodeType !== 1 || !n.className?.toString().startsWith('onpurpose-'))))) scheduleScan();
   });
   const observePage = () => observer.observe(document.body, {childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['href', 'title']});
   observePage();

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0 (2026-09-21)
+
+Adopt the OnPurpose name across the extension, documentation, downloads and repository. Existing keys, goals, bookmarks and usage totals remain in Chrome storage when updating the existing installation. Includes the modern watch-page label layout fix.
+
 ## 0.1.5 (2026-09-21)
 
 Fix relevance labels on modern YouTube watch-page recommendations. Labels now sit beneath the title inside the text column instead of becoming a cramped extra column. A regression test reproduces the observed layout. All 63 offline tests pass.

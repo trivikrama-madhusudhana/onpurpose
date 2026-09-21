@@ -26,3 +26,5 @@ footer { border-top: 1px solid var(--border); margin-top: 16px; padding-top: 6px
 [hidden] { display: none !important; }
 
 footer .text-button{margin:8px 14px 0 0;min-height:30px}textarea::placeholder{color:var(--muted);opacity:1}textarea{caret-color:var(--text)}::selection{background:var(--accent);color:var(--accent-text)}
+
+.brand{display:inline-flex;align-items:center;gap:9px}.brand img{flex:none}

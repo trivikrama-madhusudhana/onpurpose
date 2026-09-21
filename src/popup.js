@@ -4,7 +4,7 @@ let youtube = { hasTab: false, ready: false };
 let busy = false;
 async function request(message) {
   const response = await chrome.runtime.sendMessage(message);
-  if (!response || response.error) throw new Error(response?.error || 'Idea Flow is unavailable. Reopen the popup and try again.');
+  if (!response || response.error) throw new Error(response?.error || 'OnPurpose is unavailable. Reopen the popup and try again.');
   return response;
 }
 function status(message, error = false) {

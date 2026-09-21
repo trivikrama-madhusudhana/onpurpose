@@ -22,7 +22,7 @@ Point to an existing key file; do not commit credentials. Alternatively, supply 
 ```sh
 export OPENROUTER_KEY_FILE=/path/to/your/existing-key-file
 node scripts/evaluate.mjs --split development
-node scripts/score.mjs --run evaluation/runs/idea-flow-relevance-v4 --split development
+node scripts/score.mjs --run evaluation/runs/onpurpose-relevance-v4 --split development
 ```
 
 **Live evaluation makes paid requests.** It sends each goal and its video metadata to OpenRouter and the Jev provider. Default concurrency is 3; each failed request can receive one retry. Options include `--concurrency 1`, `--attempts 1`, `--corpus FILE`, and `--out DIR`.
@@ -35,7 +35,7 @@ After development decisions are settled, evaluate the held-out split once:
 
 ```sh
 node scripts/evaluate.mjs --split holdout
-node scripts/score.mjs --run evaluation/runs/idea-flow-relevance-v4 --split all
+node scripts/score.mjs --run evaluation/runs/onpurpose-relevance-v4 --split all
 ```
 
 If you tune from holdout outcomes, it is no longer held out. Collect and independently label new cases for a new evaluation. Confidence scores and a small fixed sample do not establish universal reliability.
