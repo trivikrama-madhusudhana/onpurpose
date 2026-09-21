@@ -109,3 +109,7 @@ Version 0.1.2 changes the interface, not the frozen Jev model policy. It removes
 ## Public release 0.1.4
 
 The current automated suite passes 62 tests. These include consistent outside-goal labels, individual reveal, show/hide all and newly loaded cards. Historical live checks above cover their recorded source versions, not a fresh end-to-end run of 0.1.4. The latest visual and control changes still need current live-browser confirmation. Filtering thresholds and the frozen model rubric are unchanged.
+
+## Public release 0.1.5
+
+All 63 offline tests pass, including the regression for modern watch-page recommendation badge placement. The cramped layout was observed on actual YouTube in the previously loaded extension. The corrected layout still needs a fresh live check after reloading the unpacked extension.

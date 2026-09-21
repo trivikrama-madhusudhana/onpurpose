@@ -219,7 +219,10 @@
       const help = document.createElement('p'); help.textContent = explanations[visibleLabel];
       badge.append(summary,help);
       badge.addEventListener('click', event => event.stopPropagation());
-      const metadata = record.card.querySelector('#meta, yt-lockup-metadata-view-model');
+      // Modern watch recommendations arrange avatar, text and menu horizontally.
+      // Put the label under the title rather than adding a fourth flex column.
+      const metadata = record.card.querySelector('yt-lockup-metadata-view-model .ytLockupMetadataViewModelTextContainer')
+        || record.card.querySelector('#meta, yt-lockup-metadata-view-model');
       (metadata && !metadata.closest('a') ? metadata : record.card).append(badge); record.badge = badge;
     }
   }

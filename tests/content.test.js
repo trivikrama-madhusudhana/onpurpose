@@ -117,6 +117,35 @@ test('modern camelCase renderers preserve channel text when it is not a link', (
   dom.window.close();
 });
 
+test('watch recommendations keep relevance labels inside the modern metadata text column', async () => {
+  const env = await setup({state:{active:false},handler:message => message.type === 'CLASSIFY' ? {
+    results:message.videos.map(video => ({id:video.id,label:'direct',confidence:.95,tangentProbability:0,collapseProbability:0}))
+  } : undefined});
+  try {
+    const card = env.w.document.createElement('yt-lockup-view-model');
+    card.innerHTML = `<a href="/watch?v=xyzABC12345"><img alt="Thumbnail"></a>
+      <yt-lockup-metadata-view-model class="ytLockupMetadataViewModelHost ytLockupMetadataViewModelHorizontal">
+        <div class="ytLockupMetadataViewModelAvatar"></div>
+        <div class="ytLockupMetadataViewModelTextContainer">
+          <h3 class="ytLockupMetadataViewModelHeadingReset"><a class="ytLockupMetadataViewModelTitle" href="/watch?v=xyzABC12345">Fix a hydration error</a></h3>
+          <div class="ytContentMetadataViewModelMetadataRow"><span>Example developer</span></div>
+        </div>
+        <div class="ytLockupMetadataViewModelMenuButton"><button>More actions</button></div>
+      </yt-lockup-metadata-view-model>`;
+    env.card.replaceWith(card);
+    env.root.querySelector('#pause').click();
+    await sleep(750);
+    const metadata = card.querySelector('yt-lockup-metadata-view-model');
+    const badge = card.querySelector('.idea-flow-badge');
+    assert.ok(badge);
+    assert.equal(badge.parentElement, card.querySelector('.ytLockupMetadataViewModelTextContainer'));
+    assert.equal(metadata.children.length, 3, 'A badge must not become a fourth horizontal column');
+    assert.equal(badge.closest('a'), null, 'Label controls must remain outside the video link');
+    assert.equal(badge.querySelector('summary').textContent, 'Relevant to your goal');
+    assert.equal(extractVideo(card).title, 'Fix a hydration error');
+  } finally { env.dom.window.close(); }
+});
+
 
 test('nonempty search snippets win over empty hidden description nodes', () => {
   const dom = new JSDOM(`<ytd-video-renderer><a id="video-title" href="/watch?v=xyzABC12345">Troubleshooting</a><div id="description-text" hidden></div><div class="metadata-snippet-text-navigation"><span class="metadata-snippet-text">The useful search snippet.</span></div></ytd-video-renderer>`);

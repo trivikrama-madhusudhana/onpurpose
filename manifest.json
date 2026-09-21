@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Idea Flow",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Filter YouTube recommendations against your goal using Jev and your own OpenRouter API key.",
   "permissions": [
     "storage"
