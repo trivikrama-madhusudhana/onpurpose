@@ -1,0 +1,48 @@
+{
+  "recordId": "guitar-barre-buzz:search:qoRxCIhWhsc",
+  "caseId": "guitar-barre-buzz",
+  "split": "development",
+  "decision": {
+    "label": "direct",
+    "confidence": 0.53,
+    "tangentProbability": 0,
+    "collapseProbability": 0,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "keep",
+        "probabilities": {
+          "keep": 1,
+          "collapse": 0
+        },
+        "confidence": 1
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "direct",
+        "probabilities": {
+          "direct": 0.65,
+          "background": 0.01,
+          "tangent": 0,
+          "unclear": 0.34
+        },
+        "confidence": 0.53
+      }
+    },
+    "usage": {
+      "input_tokens": 881,
+      "output_tokens": 78,
+      "cost": 0.000037002
+    },
+    "id": "gen-dec-1789995412-llCPVYyXdABXRuVQmNYm",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 488,
+  "cached": true,
+  "rubricVersion": "idea-flow-relevance-v4",
+  "reparsedFrom": "idea-flow-relevance-v2"
+}

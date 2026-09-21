@@ -1,0 +1,19 @@
+{
+  "rubricVersion": "idea-flow-relevance-v1",
+  "note": "Historical UI positioning check before final v4 policy and goal-race fixes. Final v4 live results are in live-extension-results.json.",
+  "checks": {
+    "stickyBarAfterScroll": {
+      "x": 0,
+      "y": 56,
+      "width": 1440,
+      "height": 82.1875
+    },
+    "passed": true,
+    "usage": {
+      "requests": 48,
+      "inputTokens": 31544,
+      "outputTokens": 2373,
+      "cost": 0.0013248480000000004
+    }
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "recordId": "obs-mic-only:watch:kRYOr51aeOs",
+  "caseId": "obs-mic-only",
+  "split": "development",
+  "decision": {
+    "label": "tangent",
+    "confidence": 0.85,
+    "tangentProbability": 0.89,
+    "collapseProbability": 0.86,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "collapse",
+        "probabilities": {
+          "collapse": 0.86,
+          "keep": 0.14
+        },
+        "confidence": 0.71
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "tangent",
+        "probabilities": {
+          "unclear": 0.09,
+          "tangent": 0.89,
+          "direct": 0,
+          "background": 0.02
+        },
+        "confidence": 0.85
+      }
+    },
+    "usage": {
+      "input_tokens": 905,
+      "output_tokens": 79,
+      "cost": 0.00003801
+    },
+    "id": "gen-dec-1789995400-dMXu0Bm2V0EzaYusZiJ7",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 473,
+  "cached": true,
+  "rubricVersion": "idea-flow-relevance-v4",
+  "reparsedFrom": "idea-flow-relevance-v2"
+}

@@ -1,0 +1,17 @@
+[
+  {"id":"nextjs-hydration","goal":"Fix a hydration mismatch error in a Next.js App Router application.","query":"Next.js App Router hydration mismatch error fix","split":"development"},
+  {"id":"excel-xlookup","goal":"Use Excel XLOOKUP to find an exact match on a different worksheet and return the corresponding value.","query":"Excel XLOOKUP exact match different sheets","split":"development"},
+  {"id":"resolve-vfr-audio","goal":"Fix audio drifting out of sync in DaVinci Resolve when editing footage recorded with a variable frame rate.","query":"DaVinci Resolve variable frame rate audio out of sync fix","split":"holdout"},
+  {"id":"obs-mic-only","goal":"Record my microphone in OBS without recording any desktop or system audio.","query":"OBS record microphone only no desktop audio","split":"development"},
+  {"id":"iphone-usb-windows","goal":"Transfer photos from an iPhone to a Windows PC through a USB cable without using iCloud.","query":"transfer iPhone photos Windows USB without iCloud","split":"development"},
+  {"id":"sourdough-gummy","goal":"Diagnose and fix a sourdough loaf that comes out dense and gummy inside.","query":"sourdough dense gummy crumb how to fix","split":"development"},
+  {"id":"toilet-flapper","goal":"Stop a continuously running toilet by checking and replacing a leaking flapper.","query":"running toilet replace leaking flapper","split":"holdout"},
+  {"id":"bike-indexing","goal":"Fix a bicycle rear derailleur that skips gears by adjusting its indexing.","query":"rear derailleur indexing skipping gears adjustment","split":"development"},
+  {"id":"figma-button","goal":"Build a Figma auto-layout button with an icon and text label that resizes correctly when the label changes.","query":"Figma auto layout button icon text resize","split":"development"},
+  {"id":"pandas-merge-duplicates","goal":"Understand why a pandas merge creates duplicate rows from a many-to-many join and prevent unintended row multiplication.","query":"pandas merge duplicate rows many to many join fix","split":"holdout"},
+  {"id":"guitar-barre-buzz","goal":"Stop strings buzzing or sounding muted when I play barre chords on guitar.","query":"guitar barre chords buzzing muted strings fix","split":"development"},
+  {"id":"lightroom-green-skin","goal":"Correct an unwanted green colour cast on skin in Lightroom while keeping the rest of the image natural.","query":"Lightroom fix green skin color cast","split":"holdout"},
+  {"id":"bambu-pla-adhesion","goal":"Fix poor first-layer bed adhesion when printing PLA on a Bambu Lab A1.","query":"Bambu A1 PLA first layer bed adhesion fix","split":"development"},
+  {"id":"elementor-overflow","goal":"Find and fix horizontal overflow that makes an Elementor page scroll sideways on mobile.","query":"Elementor mobile horizontal overflow sideways scrolling fix","split":"development"},
+  {"id":"sheets-dependent-dropdown","goal":"Create dependent dropdown lists in Google Sheets without using Apps Script.","query":"Google Sheets dependent dropdown without Apps Script","split":"holdout"}
+]

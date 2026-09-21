@@ -1,0 +1,17 @@
+{
+  "frozenAt": "2026-09-21T13:02:04.407732+00:00",
+  "rubricVersion": "idea-flow-relevance-v4",
+  "adapterSha256": "aa921ef74124ee6d3831229794fed89c9e333227a7a2c679e97806a485cebb69",
+  "corpusSha256": "0ce72a9244394453f8b298fb72cf19fa7ae52451115b161de70b25133477b791",
+  "thresholds": {
+    "tangentProbability": 0.8,
+    "collapseProbability": 0.7
+  },
+  "development": {
+    "usefulHidden": 0,
+    "unclearHidden": 0,
+    "tangentsRemoved": 35,
+    "tangentsTotal": 51
+  },
+  "note": "Development removal target70% narrowly missed at68.6%. Selected conservative policy preserving all useful and unclear cards; do not represent target as passed. Holdout not yet queried. Retain this frozen policy regardless of holdout result."
+}

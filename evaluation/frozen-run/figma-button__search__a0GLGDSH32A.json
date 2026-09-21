@@ -1,0 +1,48 @@
+{
+  "recordId": "figma-button:search:a0GLGDSH32A",
+  "caseId": "figma-button",
+  "split": "development",
+  "decision": {
+    "label": "direct",
+    "confidence": 0.78,
+    "tangentProbability": 0,
+    "collapseProbability": 0,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "keep",
+        "probabilities": {
+          "keep": 1,
+          "collapse": 0
+        },
+        "confidence": 1
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "direct",
+        "probabilities": {
+          "unclear": 0.16,
+          "direct": 0.83,
+          "tangent": 0,
+          "background": 0.01
+        },
+        "confidence": 0.78
+      }
+    },
+    "usage": {
+      "input_tokens": 911,
+      "output_tokens": 78,
+      "cost": 0.000038262
+    },
+    "id": "gen-dec-1789995409-3i91JhPEF6wZw06LUiwj",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 401,
+  "cached": true,
+  "rubricVersion": "idea-flow-relevance-v4",
+  "reparsedFrom": "idea-flow-relevance-v2"
+}

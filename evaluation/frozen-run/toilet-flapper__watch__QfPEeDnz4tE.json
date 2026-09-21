@@ -1,0 +1,47 @@
+{
+  "recordId": "toilet-flapper:watch:QfPEeDnz4tE",
+  "caseId": "toilet-flapper",
+  "split": "holdout",
+  "decision": {
+    "label": "direct",
+    "confidence": 0.28,
+    "tangentProbability": 0.06,
+    "collapseProbability": 0,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "keep",
+        "probabilities": {
+          "keep": 0.97,
+          "collapse": 0.03
+        },
+        "confidence": 0.95
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "direct",
+        "probabilities": {
+          "direct": 0.46,
+          "background": 0.1,
+          "tangent": 0.06,
+          "unclear": 0.38
+        },
+        "confidence": 0.28
+      }
+    },
+    "usage": {
+      "input_tokens": 914,
+      "output_tokens": 78,
+      "cost": 0.000038388
+    },
+    "id": "gen-dec-1789995729-ftAbYUfl5usubmH1JEkY",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 378,
+  "cached": false,
+  "rubricVersion": "idea-flow-relevance-v4"
+}

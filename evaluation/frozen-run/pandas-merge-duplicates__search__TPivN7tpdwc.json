@@ -1,0 +1,47 @@
+{
+  "recordId": "pandas-merge-duplicates:search:TPivN7tpdwc",
+  "caseId": "pandas-merge-duplicates",
+  "split": "holdout",
+  "decision": {
+    "label": "unclear",
+    "confidence": 0.6,
+    "tangentProbability": 0.01,
+    "collapseProbability": 0,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "keep",
+        "probabilities": {
+          "collapse": 0.01,
+          "keep": 0.99
+        },
+        "confidence": 0.99
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "unclear",
+        "probabilities": {
+          "tangent": 0.01,
+          "background": 0.26,
+          "direct": 0.03,
+          "unclear": 0.7
+        },
+        "confidence": 0.6
+      }
+    },
+    "usage": {
+      "input_tokens": 936,
+      "output_tokens": 79,
+      "cost": 0.000039312
+    },
+    "id": "gen-dec-1789995731-m47EX2x69RfrwMweijbJ",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 416,
+  "cached": false,
+  "rubricVersion": "idea-flow-relevance-v4"
+}

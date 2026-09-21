@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Idea Flow",
+  "version": "0.1.4",
+  "description": "Filter YouTube recommendations against your goal using Jev and your own OpenRouter API key.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "https://openrouter.ai/*",
+    "https://www.youtube.com/*"
+  ],
+  "background": {
+    "service_worker": "src/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.youtube.com/*"
+      ],
+      "js": [
+        "src/dom.js",
+        "src/content.js"
+      ],
+      "css": [
+        "src/content.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_page": "src/options.html",
+  "action": {
+    "default_title": "Idea Flow",
+    "default_popup": "src/popup.html"
+  },
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  },
+  "author": "Trivikrama Madhusudhana",
+  "homepage_url": "https://github.com/trivikrama-madhusudhana/idea-flow",
+  "minimum_chrome_version": "102"
+}

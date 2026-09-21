@@ -1,0 +1,48 @@
+{
+  "recordId": "bike-indexing:watch:36YFI637EZs",
+  "caseId": "bike-indexing",
+  "split": "development",
+  "decision": {
+    "label": "direct",
+    "confidence": 0.89,
+    "tangentProbability": 0,
+    "collapseProbability": 0,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "keep",
+        "probabilities": {
+          "collapse": 0,
+          "keep": 1
+        },
+        "confidence": 1
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "direct",
+        "probabilities": {
+          "direct": 0.92,
+          "background": 0,
+          "unclear": 0.08,
+          "tangent": 0
+        },
+        "confidence": 0.89
+      }
+    },
+    "usage": {
+      "input_tokens": 904,
+      "output_tokens": 78,
+      "cost": 0.000037968
+    },
+    "id": "gen-dec-1789995408-R40Sno6Lzggw7YEVCbAm",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 520,
+  "cached": true,
+  "rubricVersion": "idea-flow-relevance-v4",
+  "reparsedFrom": "idea-flow-relevance-v2"
+}

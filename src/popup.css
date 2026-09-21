@@ -1,0 +1,28 @@
+@import url('./saved.css');
+:root{font:14px/1.45 system-ui,-apple-system,sans-serif}
+* { box-sizing: border-box; }
+body { width: 360px; margin: 0; }
+main { padding:20px; margin:0; max-width:none }
+header { margin:0; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.brand { font-size: 18px; font-weight: 750; letter-spacing: -.04em; }
+.scope { font-size: 11px; color: var(--muted); border: 1px solid var(--border); padding: 3px 7px; border-radius: 20px; }
+h1 { font-size: 20px; line-height: 1.25; letter-spacing: -.02em; margin: 22px 0 12px; }
+textarea { display: block; resize: vertical; width: 100%; max-height: 180px; min-height: 86px; border: 1px solid var(--border); border-radius: 9px; padding: 11px; font: inherit; color: inherit; background: var(--surface); }
+button { cursor: pointer; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); padding: 8px 11px; font: inherit; }
+button:disabled { opacity: .5; cursor: default; }
+button.primary { display: block; width: 100%; margin-top: 10px; padding: 10px; background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 650; }
+button:hover:not(:disabled) { filter: brightness(.96); }
+button:focus-visible, textarea:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.actions { display: flex; gap: 8px; margin: 12px 0; }
+.actions button { flex: 1; }
+.help { color: var(--muted); font-size: 12px; }
+.help-box { border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 10px; margin-top: 12px; font-size: 12px; }
+.help-box p { margin-top: 0; }
+footer { border-top: 1px solid var(--border); margin-top: 16px; padding-top: 6px; }
+.text-button { padding: 0; border: 0; background: transparent; text-decoration: underline; text-underline-offset: 3px; font-size: 12px; }
+#status { min-height: 1em; margin: 12px 0 0; color: var(--muted); font-size: 12px; }
+#status[data-error="true"] { color: var(--error); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+[hidden] { display: none !important; }
+
+footer .text-button{margin:8px 14px 0 0;min-height:30px}textarea::placeholder{color:var(--muted);opacity:1}textarea{caret-color:var(--text)}::selection{background:var(--accent);color:var(--accent-text)}

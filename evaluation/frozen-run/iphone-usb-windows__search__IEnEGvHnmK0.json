@@ -1,0 +1,48 @@
+{
+  "recordId": "iphone-usb-windows:search:IEnEGvHnmK0",
+  "caseId": "iphone-usb-windows",
+  "split": "development",
+  "decision": {
+    "label": "tangent",
+    "confidence": 1,
+    "tangentProbability": 1,
+    "collapseProbability": 1,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "collapse",
+        "probabilities": {
+          "keep": 0,
+          "collapse": 1
+        },
+        "confidence": 0.99
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "tangent",
+        "probabilities": {
+          "tangent": 1,
+          "direct": 0,
+          "unclear": 0,
+          "background": 0
+        },
+        "confidence": 1
+      }
+    },
+    "usage": {
+      "input_tokens": 947,
+      "output_tokens": 79,
+      "cost": 0.000039774
+    },
+    "id": "gen-dec-1789995402-JAmjdpzGZEtffjd9Zz9V",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 421,
+  "cached": true,
+  "rubricVersion": "idea-flow-relevance-v4",
+  "reparsedFrom": "idea-flow-relevance-v2"
+}

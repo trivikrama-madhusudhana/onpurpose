@@ -1,0 +1,48 @@
+{
+  "recordId": "excel-xlookup:search:uTHDdh1KYUM",
+  "caseId": "excel-xlookup",
+  "split": "development",
+  "decision": {
+    "label": "tangent",
+    "confidence": 0.22,
+    "tangentProbability": 0.42,
+    "collapseProbability": 0,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "keep",
+        "probabilities": {
+          "collapse": 0.3,
+          "keep": 0.7
+        },
+        "confidence": 0.4
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "tangent",
+        "probabilities": {
+          "tangent": 0.42,
+          "background": 0.14,
+          "direct": 0.07,
+          "unclear": 0.37
+        },
+        "confidence": 0.22
+      }
+    },
+    "usage": {
+      "input_tokens": 895,
+      "output_tokens": 79,
+      "cost": 0.00003759
+    },
+    "id": "gen-dec-1789995395-0wWVACe8AaNkexKPRgSj",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 428,
+  "cached": true,
+  "rubricVersion": "idea-flow-relevance-v4",
+  "reparsedFrom": "idea-flow-relevance-v2"
+}

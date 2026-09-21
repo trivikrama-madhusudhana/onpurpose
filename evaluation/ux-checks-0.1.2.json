@@ -1,0 +1,35 @@
+{
+  "version": "0.1.2",
+  "automatedTests": {
+    "passed": 60,
+    "failed": 0
+  },
+  "contrastRatios": {
+    "direct light": 7.86,
+    "direct dark": 9.76,
+    "background light": 8.09,
+    "background dark": 10.11,
+    "unclear light": 8.19,
+    "unclear dark": 10.91,
+    "tangent light": 7.7,
+    "tangent dark": 9.9,
+    "bar muted light": 6.77,
+    "bar muted dark": 10.05
+  },
+  "visualFixtureChecks": {
+    "widths": [
+      800,
+      1440
+    ],
+    "themes": [
+      "light",
+      "dark"
+    ],
+    "horizontalOverflow": false,
+    "barClears72pxNavigation": true,
+    "labelExplanationOpened": true,
+    "note": "Production interface code on a local layout fixture with mock classifications. Not a post-update live YouTube verification."
+  },
+  "actualYouTubeVerification": "Pending extension reload",
+  "designScan": "Degraded regex-only detector; supplemented by visual inspection and numeric contrast checks."
+}

@@ -1,0 +1,47 @@
+{
+  "recordId": "lightroom-green-skin:watch:yje6CLoFGVU",
+  "caseId": "lightroom-green-skin",
+  "split": "holdout",
+  "decision": {
+    "label": "unclear",
+    "confidence": 0.85,
+    "tangentProbability": 0.07,
+    "collapseProbability": 0,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "keep",
+        "probabilities": {
+          "keep": 0.97,
+          "collapse": 0.03
+        },
+        "confidence": 0.95
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "unclear",
+        "probabilities": {
+          "direct": 0,
+          "tangent": 0.07,
+          "background": 0.04,
+          "unclear": 0.89
+        },
+        "confidence": 0.85
+      }
+    },
+    "usage": {
+      "input_tokens": 907,
+      "output_tokens": 79,
+      "cost": 0.000038094
+    },
+    "id": "gen-dec-1789995736-FzBALBc3O16HOg1sSUkE",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 405,
+  "cached": false,
+  "rubricVersion": "idea-flow-relevance-v4"
+}

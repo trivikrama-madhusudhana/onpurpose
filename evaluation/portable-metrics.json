@@ -1,0 +1,1148 @@
+{
+  "schemaVersion": 1,
+  "split": "all",
+  "policy": "tangent-and-collapse-probabilities",
+  "thresholds": {
+    "tangentProbability": 0.8,
+    "collapseProbability": 0.7
+  },
+  "scoredAt": "2026-09-21T13:03:43.235Z",
+  "completeSelectedSplit": true,
+  "coverage": {
+    "corpusRecords": 381,
+    "referenceRecords": 381,
+    "selectedRecords": 381,
+    "selectedPredictions": 381
+  },
+  "rubricVersions": [
+    "idea-flow-relevance-v4"
+  ],
+  "overall": {
+    "records": 381,
+    "uniqueVideos": 353,
+    "referenceCounts": {
+      "direct": 146,
+      "background": 71,
+      "tangent": 99,
+      "unclear": 65
+    },
+    "collapsed": 70,
+    "falseHiddenUseful": 0,
+    "falseHiddenUsefulRate": 0,
+    "falseHiddenUnclear": 0,
+    "usefulPreserved": 217,
+    "usefulTotal": 217,
+    "usefulPreservationRate": 1,
+    "tangentsRemoved": 70,
+    "tangentsTotal": 99,
+    "tangentRemovalRate": 0.7070707070707071,
+    "collapsePrecision": 1,
+    "fourClassAgreement": 0.7349081364829396,
+    "uncertainty": {
+      "predictedUnclear": 68,
+      "predictedUnclearRate": 0.1784776902887139,
+      "tangentsKeptBelowThreshold": 37,
+      "requestErrorsKeptVisible": 0
+    },
+    "confusion": {
+      "direct": {
+        "direct": 137,
+        "background": 4,
+        "tangent": 0,
+        "unclear": 5
+      },
+      "background": {
+        "direct": 12,
+        "background": 23,
+        "tangent": 7,
+        "unclear": 29
+      },
+      "tangent": {
+        "direct": 0,
+        "background": 3,
+        "tangent": 91,
+        "unclear": 5
+      },
+      "unclear": {
+        "direct": 26,
+        "background": 1,
+        "tangent": 9,
+        "unclear": 29
+      }
+    },
+    "falseHidden": []
+  },
+  "splits": {
+    "development": {
+      "records": 251,
+      "uniqueVideos": 229,
+      "referenceCounts": {
+        "direct": 110,
+        "background": 52,
+        "tangent": 51,
+        "unclear": 38
+      },
+      "collapsed": 35,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 162,
+      "usefulTotal": 162,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 35,
+      "tangentsTotal": 51,
+      "tangentRemovalRate": 0.6862745098039216,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.7370517928286853,
+      "uncertainty": {
+        "predictedUnclear": 41,
+        "predictedUnclearRate": 0.16334661354581673,
+        "tangentsKeptBelowThreshold": 22,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 105,
+          "background": 3,
+          "tangent": 0,
+          "unclear": 2
+        },
+        "background": {
+          "direct": 11,
+          "background": 15,
+          "tangent": 6,
+          "unclear": 20
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 3,
+          "tangent": 47,
+          "unclear": 1
+        },
+        "unclear": {
+          "direct": 15,
+          "background": 1,
+          "tangent": 4,
+          "unclear": 18
+        }
+      },
+      "falseHidden": []
+    },
+    "holdout": {
+      "records": 130,
+      "uniqueVideos": 125,
+      "referenceCounts": {
+        "direct": 36,
+        "background": 19,
+        "tangent": 48,
+        "unclear": 27
+      },
+      "collapsed": 35,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 55,
+      "usefulTotal": 55,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 35,
+      "tangentsTotal": 48,
+      "tangentRemovalRate": 0.7291666666666666,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.7307692307692307,
+      "uncertainty": {
+        "predictedUnclear": 27,
+        "predictedUnclearRate": 0.2076923076923077,
+        "tangentsKeptBelowThreshold": 15,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 32,
+          "background": 1,
+          "tangent": 0,
+          "unclear": 3
+        },
+        "background": {
+          "direct": 1,
+          "background": 8,
+          "tangent": 1,
+          "unclear": 9
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 44,
+          "unclear": 4
+        },
+        "unclear": {
+          "direct": 11,
+          "background": 0,
+          "tangent": 5,
+          "unclear": 11
+        }
+      },
+      "falseHidden": []
+    }
+  },
+  "cases": {
+    "nextjs-hydration": {
+      "records": 25,
+      "uniqueVideos": 24,
+      "referenceCounts": {
+        "direct": 16,
+        "background": 1,
+        "tangent": 5,
+        "unclear": 3
+      },
+      "collapsed": 2,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 17,
+      "usefulTotal": 17,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 2,
+      "tangentsTotal": 5,
+      "tangentRemovalRate": 0.4,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.88,
+      "uncertainty": {
+        "predictedUnclear": 2,
+        "predictedUnclearRate": 0.08,
+        "tangentsKeptBelowThreshold": 3,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 14,
+          "background": 2,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "background": {
+          "direct": 0,
+          "background": 1,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 5,
+          "unclear": 0
+        },
+        "unclear": {
+          "direct": 0,
+          "background": 1,
+          "tangent": 0,
+          "unclear": 2
+        }
+      },
+      "falseHidden": []
+    },
+    "excel-xlookup": {
+      "records": 25,
+      "uniqueVideos": 24,
+      "referenceCounts": {
+        "direct": 3,
+        "background": 13,
+        "tangent": 7,
+        "unclear": 2
+      },
+      "collapsed": 4,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 16,
+      "usefulTotal": 16,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 4,
+      "tangentsTotal": 7,
+      "tangentRemovalRate": 0.5714285714285714,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.52,
+      "uncertainty": {
+        "predictedUnclear": 9,
+        "predictedUnclearRate": 0.36,
+        "tangentsKeptBelowThreshold": 7,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 3,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "background": {
+          "direct": 0,
+          "background": 2,
+          "tangent": 3,
+          "unclear": 8
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 7,
+          "unclear": 0
+        },
+        "unclear": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 1,
+          "unclear": 1
+        }
+      },
+      "falseHidden": []
+    },
+    "resolve-vfr-audio": {
+      "records": 26,
+      "uniqueVideos": 25,
+      "referenceCounts": {
+        "direct": 7,
+        "background": 5,
+        "tangent": 12,
+        "unclear": 2
+      },
+      "collapsed": 7,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 12,
+      "usefulTotal": 12,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 7,
+      "tangentsTotal": 12,
+      "tangentRemovalRate": 0.5833333333333334,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.7692307692307693,
+      "uncertainty": {
+        "predictedUnclear": 4,
+        "predictedUnclearRate": 0.15384615384615385,
+        "tangentsKeptBelowThreshold": 4,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 6,
+          "background": 1,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "background": {
+          "direct": 1,
+          "background": 2,
+          "tangent": 0,
+          "unclear": 2
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 11,
+          "unclear": 1
+        },
+        "unclear": {
+          "direct": 1,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 1
+        }
+      },
+      "falseHidden": []
+    },
+    "obs-mic-only": {
+      "records": 26,
+      "uniqueVideos": 25,
+      "referenceCounts": {
+        "direct": 0,
+        "background": 6,
+        "tangent": 13,
+        "unclear": 7
+      },
+      "collapsed": 8,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 6,
+      "usefulTotal": 6,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 8,
+      "tangentsTotal": 13,
+      "tangentRemovalRate": 0.6153846153846154,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.6923076923076923,
+      "uncertainty": {
+        "predictedUnclear": 6,
+        "predictedUnclearRate": 0.23076923076923078,
+        "tangentsKeptBelowThreshold": 5,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "background": {
+          "direct": 3,
+          "background": 1,
+          "tangent": 2,
+          "unclear": 0
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 2,
+          "tangent": 11,
+          "unclear": 0
+        },
+        "unclear": {
+          "direct": 1,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 6
+        }
+      },
+      "falseHidden": []
+    },
+    "iphone-usb-windows": {
+      "records": 23,
+      "uniqueVideos": 21,
+      "referenceCounts": {
+        "direct": 2,
+        "background": 0,
+        "tangent": 6,
+        "unclear": 15
+      },
+      "collapsed": 6,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 2,
+      "usefulTotal": 2,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 6,
+      "tangentsTotal": 6,
+      "tangentRemovalRate": 1,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.43478260869565216,
+      "uncertainty": {
+        "predictedUnclear": 2,
+        "predictedUnclearRate": 0.08695652173913043,
+        "tangentsKeptBelowThreshold": 2,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 2,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "background": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 6,
+          "unclear": 0
+        },
+        "unclear": {
+          "direct": 11,
+          "background": 0,
+          "tangent": 2,
+          "unclear": 2
+        }
+      },
+      "falseHidden": []
+    },
+    "sourdough-gummy": {
+      "records": 26,
+      "uniqueVideos": 23,
+      "referenceCounts": {
+        "direct": 16,
+        "background": 7,
+        "tangent": 2,
+        "unclear": 1
+      },
+      "collapsed": 0,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 23,
+      "usefulTotal": 23,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 0,
+      "tangentsTotal": 2,
+      "tangentRemovalRate": 0,
+      "collapsePrecision": null,
+      "fourClassAgreement": 0.6538461538461539,
+      "uncertainty": {
+        "predictedUnclear": 4,
+        "predictedUnclearRate": 0.15384615384615385,
+        "tangentsKeptBelowThreshold": 1,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 16,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "background": {
+          "direct": 2,
+          "background": 1,
+          "tangent": 1,
+          "unclear": 3
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 1,
+          "tangent": 0,
+          "unclear": 1
+        },
+        "unclear": {
+          "direct": 1,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 0
+        }
+      },
+      "falseHidden": []
+    },
+    "toilet-flapper": {
+      "records": 26,
+      "uniqueVideos": 25,
+      "referenceCounts": {
+        "direct": 17,
+        "background": 2,
+        "tangent": 5,
+        "unclear": 2
+      },
+      "collapsed": 3,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 19,
+      "usefulTotal": 19,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 3,
+      "tangentsTotal": 5,
+      "tangentRemovalRate": 0.6,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.8846153846153846,
+      "uncertainty": {
+        "predictedUnclear": 2,
+        "predictedUnclearRate": 0.07692307692307693,
+        "tangentsKeptBelowThreshold": 3,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 17,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "background": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 1,
+          "unclear": 1
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 5,
+          "unclear": 0
+        },
+        "unclear": {
+          "direct": 1,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 1
+        }
+      },
+      "falseHidden": []
+    },
+    "bike-indexing": {
+      "records": 26,
+      "uniqueVideos": 22,
+      "referenceCounts": {
+        "direct": 21,
+        "background": 0,
+        "tangent": 4,
+        "unclear": 1
+      },
+      "collapsed": 4,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 21,
+      "usefulTotal": 21,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 4,
+      "tangentsTotal": 4,
+      "tangentRemovalRate": 1,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.9230769230769231,
+      "uncertainty": {
+        "predictedUnclear": 2,
+        "predictedUnclearRate": 0.07692307692307693,
+        "tangentsKeptBelowThreshold": 0,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 19,
+          "background": 1,
+          "tangent": 0,
+          "unclear": 1
+        },
+        "background": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 4,
+          "unclear": 0
+        },
+        "unclear": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 1
+        }
+      },
+      "falseHidden": []
+    },
+    "figma-button": {
+      "records": 26,
+      "uniqueVideos": 23,
+      "referenceCounts": {
+        "direct": 11,
+        "background": 10,
+        "tangent": 4,
+        "unclear": 1
+      },
+      "collapsed": 3,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 21,
+      "usefulTotal": 21,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 3,
+      "tangentsTotal": 4,
+      "tangentRemovalRate": 0.75,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.8076923076923077,
+      "uncertainty": {
+        "predictedUnclear": 6,
+        "predictedUnclearRate": 0.23076923076923078,
+        "tangentsKeptBelowThreshold": 1,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 11,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "background": {
+          "direct": 0,
+          "background": 5,
+          "tangent": 0,
+          "unclear": 5
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 4,
+          "unclear": 0
+        },
+        "unclear": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 1
+        }
+      },
+      "falseHidden": []
+    },
+    "pandas-merge-duplicates": {
+      "records": 26,
+      "uniqueVideos": 26,
+      "referenceCounts": {
+        "direct": 1,
+        "background": 8,
+        "tangent": 12,
+        "unclear": 5
+      },
+      "collapsed": 11,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 9,
+      "usefulTotal": 9,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 11,
+      "tangentsTotal": 12,
+      "tangentRemovalRate": 0.9166666666666666,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.6923076923076923,
+      "uncertainty": {
+        "predictedUnclear": 7,
+        "predictedUnclearRate": 0.2692307692307692,
+        "tangentsKeptBelowThreshold": 3,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 1,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "background": {
+          "direct": 0,
+          "background": 4,
+          "tangent": 0,
+          "unclear": 4
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 11,
+          "unclear": 1
+        },
+        "unclear": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 3,
+          "unclear": 2
+        }
+      },
+      "falseHidden": []
+    },
+    "guitar-barre-buzz": {
+      "records": 22,
+      "uniqueVideos": 21,
+      "referenceCounts": {
+        "direct": 10,
+        "background": 9,
+        "tangent": 1,
+        "unclear": 2
+      },
+      "collapsed": 1,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 19,
+      "usefulTotal": 19,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 1,
+      "tangentsTotal": 1,
+      "tangentRemovalRate": 1,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.6363636363636364,
+      "uncertainty": {
+        "predictedUnclear": 2,
+        "predictedUnclearRate": 0.09090909090909091,
+        "tangentsKeptBelowThreshold": 0,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 10,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "background": {
+          "direct": 6,
+          "background": 2,
+          "tangent": 0,
+          "unclear": 1
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 1,
+          "unclear": 0
+        },
+        "unclear": {
+          "direct": 1,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 1
+        }
+      },
+      "falseHidden": []
+    },
+    "lightroom-green-skin": {
+      "records": 26,
+      "uniqueVideos": 26,
+      "referenceCounts": {
+        "direct": 8,
+        "background": 2,
+        "tangent": 12,
+        "unclear": 4
+      },
+      "collapsed": 8,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 10,
+      "usefulTotal": 10,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 8,
+      "tangentsTotal": 12,
+      "tangentRemovalRate": 0.6666666666666666,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.8076923076923077,
+      "uncertainty": {
+        "predictedUnclear": 9,
+        "predictedUnclearRate": 0.34615384615384615,
+        "tangentsKeptBelowThreshold": 2,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 5,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 3
+        },
+        "background": {
+          "direct": 0,
+          "background": 2,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 10,
+          "unclear": 2
+        },
+        "unclear": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 4
+        }
+      },
+      "falseHidden": []
+    },
+    "bambu-pla-adhesion": {
+      "records": 26,
+      "uniqueVideos": 21,
+      "referenceCounts": {
+        "direct": 20,
+        "background": 2,
+        "tangent": 1,
+        "unclear": 3
+      },
+      "collapsed": 1,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 22,
+      "usefulTotal": 22,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 1,
+      "tangentsTotal": 1,
+      "tangentRemovalRate": 1,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.9230769230769231,
+      "uncertainty": {
+        "predictedUnclear": 5,
+        "predictedUnclearRate": 0.19230769230769232,
+        "tangentsKeptBelowThreshold": 0,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 19,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 1
+        },
+        "background": {
+          "direct": 0,
+          "background": 1,
+          "tangent": 0,
+          "unclear": 1
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 1,
+          "unclear": 0
+        },
+        "unclear": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 3
+        }
+      },
+      "falseHidden": []
+    },
+    "elementor-overflow": {
+      "records": 26,
+      "uniqueVideos": 25,
+      "referenceCounts": {
+        "direct": 11,
+        "background": 4,
+        "tangent": 8,
+        "unclear": 3
+      },
+      "collapsed": 6,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 15,
+      "usefulTotal": 15,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 6,
+      "tangentsTotal": 8,
+      "tangentRemovalRate": 0.75,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.8461538461538461,
+      "uncertainty": {
+        "predictedUnclear": 3,
+        "predictedUnclearRate": 0.11538461538461539,
+        "tangentsKeptBelowThreshold": 3,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 11,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "background": {
+          "direct": 0,
+          "background": 2,
+          "tangent": 0,
+          "unclear": 2
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 8,
+          "unclear": 0
+        },
+        "unclear": {
+          "direct": 1,
+          "background": 0,
+          "tangent": 1,
+          "unclear": 1
+        }
+      },
+      "falseHidden": []
+    },
+    "sheets-dependent-dropdown": {
+      "records": 26,
+      "uniqueVideos": 26,
+      "referenceCounts": {
+        "direct": 3,
+        "background": 2,
+        "tangent": 7,
+        "unclear": 14
+      },
+      "collapsed": 6,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 5,
+      "usefulTotal": 5,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 6,
+      "tangentsTotal": 7,
+      "tangentRemovalRate": 0.8571428571428571,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.5,
+      "uncertainty": {
+        "predictedUnclear": 5,
+        "predictedUnclearRate": 0.19230769230769232,
+        "tangentsKeptBelowThreshold": 3,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 3,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 0
+        },
+        "background": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 0,
+          "unclear": 2
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 0,
+          "tangent": 7,
+          "unclear": 0
+        },
+        "unclear": {
+          "direct": 9,
+          "background": 0,
+          "tangent": 2,
+          "unclear": 3
+        }
+      },
+      "falseHidden": []
+    }
+  },
+  "surfaces": {
+    "search": {
+      "records": 231,
+      "uniqueVideos": 230,
+      "referenceCounts": {
+        "direct": 123,
+        "background": 42,
+        "tangent": 36,
+        "unclear": 30
+      },
+      "collapsed": 25,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 165,
+      "usefulTotal": 165,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 25,
+      "tangentsTotal": 36,
+      "tangentRemovalRate": 0.6944444444444444,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.7402597402597403,
+      "uncertainty": {
+        "predictedUnclear": 29,
+        "predictedUnclearRate": 0.12554112554112554,
+        "tangentsKeptBelowThreshold": 17,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 116,
+          "background": 3,
+          "tangent": 0,
+          "unclear": 4
+        },
+        "background": {
+          "direct": 8,
+          "background": 14,
+          "tangent": 5,
+          "unclear": 15
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 1,
+          "tangent": 33,
+          "unclear": 2
+        },
+        "unclear": {
+          "direct": 18,
+          "background": 0,
+          "tangent": 4,
+          "unclear": 8
+        }
+      },
+      "falseHidden": []
+    },
+    "watch-recommendation": {
+      "records": 150,
+      "uniqueVideos": 146,
+      "referenceCounts": {
+        "direct": 23,
+        "background": 29,
+        "tangent": 63,
+        "unclear": 35
+      },
+      "collapsed": 45,
+      "falseHiddenUseful": 0,
+      "falseHiddenUsefulRate": 0,
+      "falseHiddenUnclear": 0,
+      "usefulPreserved": 52,
+      "usefulTotal": 52,
+      "usefulPreservationRate": 1,
+      "tangentsRemoved": 45,
+      "tangentsTotal": 63,
+      "tangentRemovalRate": 0.7142857142857143,
+      "collapsePrecision": 1,
+      "fourClassAgreement": 0.7266666666666667,
+      "uncertainty": {
+        "predictedUnclear": 39,
+        "predictedUnclearRate": 0.26,
+        "tangentsKeptBelowThreshold": 20,
+        "requestErrorsKeptVisible": 0
+      },
+      "confusion": {
+        "direct": {
+          "direct": 21,
+          "background": 1,
+          "tangent": 0,
+          "unclear": 1
+        },
+        "background": {
+          "direct": 4,
+          "background": 9,
+          "tangent": 2,
+          "unclear": 14
+        },
+        "tangent": {
+          "direct": 0,
+          "background": 2,
+          "tangent": 58,
+          "unclear": 3
+        },
+        "unclear": {
+          "direct": 8,
+          "background": 1,
+          "tangent": 5,
+          "unclear": 21
+        }
+      },
+      "falseHidden": []
+    }
+  },
+  "usage": {
+    "uniqueRequestPayloads": null,
+    "attempts": 130,
+    "successfulAttempts": 130,
+    "failedAttempts": 0,
+    "reportedCostUSD": 0.004985652000000001,
+    "inputTokens": 118706,
+    "outputTokens": 10217,
+    "attemptsWithoutReportedCost": 0
+  },
+  "latency": {
+    "measuredAttempts": 130,
+    "medianMs": 442,
+    "p95Ms": 558
+  },
+  "limitations": [
+    "Jev confidence describes concentration, not the probability of the selected label. Production scoring uses explicit tangent and collapse probabilities.",
+    "Reference labels are independent judgments from captured metadata, not verified video contents or an accuracy benchmark for every YouTube search.",
+    "Holdout independence is lost if its outcomes are used to tune the rubric; use new held-out cases for subsequent tuning.",
+    "Costs sum reported usage once per shared request and include checkpointed failed attempts when usage is present. Missing usage and legacy retry history may hide upstream charges.",
+    "Per-split request costs can overlap when the same payload occurs in both splits; use the all-split report for the deduplicated total."
+  ]
+}

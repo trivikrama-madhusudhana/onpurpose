@@ -1,0 +1,631 @@
+{
+  "version": "idea-flow-relevance-v4",
+  "threshold": 0.8,
+  "overall": {
+    "records": 381,
+    "unique_videos": 353,
+    "reference_counts": {
+      "direct": 146,
+      "tangent": 99,
+      "unclear": 65,
+      "background": 71
+    },
+    "collapsed": 70,
+    "false_hidden_useful": 0,
+    "false_hidden_unclear": 0,
+    "useful_preserved": 217,
+    "useful_total": 217,
+    "tangents_removed": 70,
+    "tangents_total": 99,
+    "tangent_removal_rate": 0.7070707070707071,
+    "collapse_precision": 1.0,
+    "four_class_agreement": 0.7349081364829396,
+    "confusion": {
+      "direct -> direct": 137,
+      "direct -> background": 4,
+      "tangent -> tangent": 91,
+      "unclear -> unclear": 29,
+      "unclear -> background": 1,
+      "background -> background": 23,
+      "background -> tangent": 7,
+      "background -> unclear": 29,
+      "unclear -> tangent": 9,
+      "tangent -> unclear": 5,
+      "unclear -> direct": 26,
+      "background -> direct": 12,
+      "tangent -> background": 3,
+      "direct -> unclear": 5
+    },
+    "false_hidden": []
+  },
+  "splits": {
+    "development": {
+      "records": 251,
+      "unique_videos": 229,
+      "reference_counts": {
+        "direct": 110,
+        "tangent": 51,
+        "unclear": 38,
+        "background": 52
+      },
+      "collapsed": 35,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 162,
+      "useful_total": 162,
+      "tangents_removed": 35,
+      "tangents_total": 51,
+      "tangent_removal_rate": 0.6862745098039216,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.7370517928286853,
+      "confusion": {
+        "direct -> direct": 105,
+        "direct -> background": 3,
+        "tangent -> tangent": 47,
+        "unclear -> unclear": 18,
+        "unclear -> background": 1,
+        "background -> background": 15,
+        "background -> tangent": 6,
+        "background -> unclear": 20,
+        "unclear -> tangent": 4,
+        "background -> direct": 11,
+        "unclear -> direct": 15,
+        "tangent -> background": 3,
+        "tangent -> unclear": 1,
+        "direct -> unclear": 2
+      },
+      "false_hidden": []
+    },
+    "holdout": {
+      "records": 130,
+      "unique_videos": 125,
+      "reference_counts": {
+        "direct": 36,
+        "background": 19,
+        "unclear": 27,
+        "tangent": 48
+      },
+      "collapsed": 35,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 55,
+      "useful_total": 55,
+      "tangents_removed": 35,
+      "tangents_total": 48,
+      "tangent_removal_rate": 0.7291666666666666,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.7307692307692307,
+      "confusion": {
+        "direct -> direct": 32,
+        "background -> unclear": 9,
+        "unclear -> unclear": 11,
+        "tangent -> unclear": 4,
+        "background -> background": 8,
+        "unclear -> direct": 11,
+        "tangent -> tangent": 44,
+        "direct -> background": 1,
+        "background -> direct": 1,
+        "background -> tangent": 1,
+        "unclear -> tangent": 5,
+        "direct -> unclear": 3
+      },
+      "false_hidden": []
+    }
+  },
+  "cases": {
+    "nextjs-hydration": {
+      "records": 25,
+      "unique_videos": 24,
+      "reference_counts": {
+        "direct": 16,
+        "tangent": 5,
+        "unclear": 3,
+        "background": 1
+      },
+      "collapsed": 2,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 17,
+      "useful_total": 17,
+      "tangents_removed": 2,
+      "tangents_total": 5,
+      "tangent_removal_rate": 0.4,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.88,
+      "confusion": {
+        "direct -> direct": 14,
+        "direct -> background": 2,
+        "tangent -> tangent": 5,
+        "unclear -> unclear": 2,
+        "unclear -> background": 1,
+        "background -> background": 1
+      },
+      "false_hidden": []
+    },
+    "excel-xlookup": {
+      "records": 25,
+      "unique_videos": 24,
+      "reference_counts": {
+        "background": 13,
+        "direct": 3,
+        "tangent": 7,
+        "unclear": 2
+      },
+      "collapsed": 4,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 16,
+      "useful_total": 16,
+      "tangents_removed": 4,
+      "tangents_total": 7,
+      "tangent_removal_rate": 0.5714285714285714,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.52,
+      "confusion": {
+        "background -> tangent": 3,
+        "background -> unclear": 8,
+        "direct -> direct": 3,
+        "background -> background": 2,
+        "tangent -> tangent": 7,
+        "unclear -> tangent": 1,
+        "unclear -> unclear": 1
+      },
+      "false_hidden": []
+    },
+    "resolve-vfr-audio": {
+      "records": 26,
+      "unique_videos": 25,
+      "reference_counts": {
+        "direct": 7,
+        "background": 5,
+        "unclear": 2,
+        "tangent": 12
+      },
+      "collapsed": 7,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 12,
+      "useful_total": 12,
+      "tangents_removed": 7,
+      "tangents_total": 12,
+      "tangent_removal_rate": 0.5833333333333334,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.7692307692307693,
+      "confusion": {
+        "direct -> direct": 6,
+        "background -> unclear": 2,
+        "unclear -> unclear": 1,
+        "tangent -> unclear": 1,
+        "background -> background": 2,
+        "unclear -> direct": 1,
+        "tangent -> tangent": 11,
+        "direct -> background": 1,
+        "background -> direct": 1
+      },
+      "false_hidden": []
+    },
+    "obs-mic-only": {
+      "records": 26,
+      "unique_videos": 25,
+      "reference_counts": {
+        "tangent": 13,
+        "background": 6,
+        "unclear": 7
+      },
+      "collapsed": 8,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 6,
+      "useful_total": 6,
+      "tangents_removed": 8,
+      "tangents_total": 13,
+      "tangent_removal_rate": 0.6153846153846154,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.6923076923076923,
+      "confusion": {
+        "tangent -> tangent": 11,
+        "background -> tangent": 2,
+        "unclear -> unclear": 6,
+        "background -> direct": 3,
+        "unclear -> direct": 1,
+        "background -> background": 1,
+        "tangent -> background": 2
+      },
+      "false_hidden": []
+    },
+    "iphone-usb-windows": {
+      "records": 23,
+      "unique_videos": 21,
+      "reference_counts": {
+        "unclear": 15,
+        "tangent": 6,
+        "direct": 2
+      },
+      "collapsed": 6,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 2,
+      "useful_total": 2,
+      "tangents_removed": 6,
+      "tangents_total": 6,
+      "tangent_removal_rate": 1.0,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.43478260869565216,
+      "confusion": {
+        "unclear -> direct": 11,
+        "tangent -> tangent": 6,
+        "direct -> direct": 2,
+        "unclear -> tangent": 2,
+        "unclear -> unclear": 2
+      },
+      "false_hidden": []
+    },
+    "sourdough-gummy": {
+      "records": 26,
+      "unique_videos": 23,
+      "reference_counts": {
+        "direct": 16,
+        "background": 7,
+        "unclear": 1,
+        "tangent": 2
+      },
+      "collapsed": 0,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 23,
+      "useful_total": 23,
+      "tangents_removed": 0,
+      "tangents_total": 2,
+      "tangent_removal_rate": 0.0,
+      "collapse_precision": null,
+      "four_class_agreement": 0.6538461538461539,
+      "confusion": {
+        "direct -> direct": 16,
+        "background -> direct": 2,
+        "background -> unclear": 3,
+        "unclear -> direct": 1,
+        "background -> background": 1,
+        "tangent -> background": 1,
+        "background -> tangent": 1,
+        "tangent -> unclear": 1
+      },
+      "false_hidden": []
+    },
+    "toilet-flapper": {
+      "records": 26,
+      "unique_videos": 25,
+      "reference_counts": {
+        "direct": 17,
+        "background": 2,
+        "tangent": 5,
+        "unclear": 2
+      },
+      "collapsed": 3,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 19,
+      "useful_total": 19,
+      "tangents_removed": 3,
+      "tangents_total": 5,
+      "tangent_removal_rate": 0.6,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.8846153846153846,
+      "confusion": {
+        "direct -> direct": 17,
+        "background -> tangent": 1,
+        "tangent -> tangent": 5,
+        "unclear -> direct": 1,
+        "unclear -> unclear": 1,
+        "background -> unclear": 1
+      },
+      "false_hidden": []
+    },
+    "bike-indexing": {
+      "records": 26,
+      "unique_videos": 22,
+      "reference_counts": {
+        "direct": 21,
+        "tangent": 4,
+        "unclear": 1
+      },
+      "collapsed": 4,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 21,
+      "useful_total": 21,
+      "tangents_removed": 4,
+      "tangents_total": 4,
+      "tangent_removal_rate": 1.0,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.9230769230769231,
+      "confusion": {
+        "direct -> direct": 19,
+        "direct -> unclear": 1,
+        "direct -> background": 1,
+        "tangent -> tangent": 4,
+        "unclear -> unclear": 1
+      },
+      "false_hidden": []
+    },
+    "figma-button": {
+      "records": 26,
+      "unique_videos": 23,
+      "reference_counts": {
+        "direct": 11,
+        "background": 10,
+        "tangent": 4,
+        "unclear": 1
+      },
+      "collapsed": 3,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 21,
+      "useful_total": 21,
+      "tangents_removed": 3,
+      "tangents_total": 4,
+      "tangent_removal_rate": 0.75,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.8076923076923077,
+      "confusion": {
+        "direct -> direct": 11,
+        "background -> unclear": 5,
+        "background -> background": 5,
+        "tangent -> tangent": 4,
+        "unclear -> unclear": 1
+      },
+      "false_hidden": []
+    },
+    "pandas-merge-duplicates": {
+      "records": 26,
+      "unique_videos": 26,
+      "reference_counts": {
+        "unclear": 5,
+        "direct": 1,
+        "tangent": 12,
+        "background": 8
+      },
+      "collapsed": 11,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 9,
+      "useful_total": 9,
+      "tangents_removed": 11,
+      "tangents_total": 12,
+      "tangent_removal_rate": 0.9166666666666666,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.6923076923076923,
+      "confusion": {
+        "unclear -> tangent": 3,
+        "direct -> direct": 1,
+        "tangent -> unclear": 1,
+        "background -> unclear": 4,
+        "background -> background": 4,
+        "tangent -> tangent": 11,
+        "unclear -> unclear": 2
+      },
+      "false_hidden": []
+    },
+    "guitar-barre-buzz": {
+      "records": 22,
+      "unique_videos": 21,
+      "reference_counts": {
+        "background": 9,
+        "direct": 10,
+        "unclear": 2,
+        "tangent": 1
+      },
+      "collapsed": 1,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 19,
+      "useful_total": 19,
+      "tangents_removed": 1,
+      "tangents_total": 1,
+      "tangent_removal_rate": 1.0,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.6363636363636364,
+      "confusion": {
+        "background -> direct": 6,
+        "direct -> direct": 10,
+        "unclear -> direct": 1,
+        "unclear -> unclear": 1,
+        "background -> background": 2,
+        "background -> unclear": 1,
+        "tangent -> tangent": 1
+      },
+      "false_hidden": []
+    },
+    "lightroom-green-skin": {
+      "records": 26,
+      "unique_videos": 26,
+      "reference_counts": {
+        "direct": 8,
+        "tangent": 12,
+        "unclear": 4,
+        "background": 2
+      },
+      "collapsed": 8,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 10,
+      "useful_total": 10,
+      "tangents_removed": 8,
+      "tangents_total": 12,
+      "tangent_removal_rate": 0.6666666666666666,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.8076923076923077,
+      "confusion": {
+        "direct -> unclear": 3,
+        "tangent -> tangent": 10,
+        "unclear -> unclear": 4,
+        "direct -> direct": 5,
+        "background -> background": 2,
+        "tangent -> unclear": 2
+      },
+      "false_hidden": []
+    },
+    "bambu-pla-adhesion": {
+      "records": 26,
+      "unique_videos": 21,
+      "reference_counts": {
+        "direct": 20,
+        "background": 2,
+        "unclear": 3,
+        "tangent": 1
+      },
+      "collapsed": 1,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 22,
+      "useful_total": 22,
+      "tangents_removed": 1,
+      "tangents_total": 1,
+      "tangent_removal_rate": 1.0,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.9230769230769231,
+      "confusion": {
+        "direct -> direct": 19,
+        "background -> background": 1,
+        "unclear -> unclear": 3,
+        "background -> unclear": 1,
+        "direct -> unclear": 1,
+        "tangent -> tangent": 1
+      },
+      "false_hidden": []
+    },
+    "elementor-overflow": {
+      "records": 26,
+      "unique_videos": 25,
+      "reference_counts": {
+        "direct": 11,
+        "tangent": 8,
+        "unclear": 3,
+        "background": 4
+      },
+      "collapsed": 6,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 15,
+      "useful_total": 15,
+      "tangents_removed": 6,
+      "tangents_total": 8,
+      "tangent_removal_rate": 0.75,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.8461538461538461,
+      "confusion": {
+        "direct -> direct": 11,
+        "tangent -> tangent": 8,
+        "unclear -> direct": 1,
+        "background -> background": 2,
+        "unclear -> tangent": 1,
+        "unclear -> unclear": 1,
+        "background -> unclear": 2
+      },
+      "false_hidden": []
+    },
+    "sheets-dependent-dropdown": {
+      "records": 26,
+      "unique_videos": 26,
+      "reference_counts": {
+        "unclear": 14,
+        "direct": 3,
+        "tangent": 7,
+        "background": 2
+      },
+      "collapsed": 6,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 5,
+      "useful_total": 5,
+      "tangents_removed": 6,
+      "tangents_total": 7,
+      "tangent_removal_rate": 0.8571428571428571,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.5,
+      "confusion": {
+        "unclear -> direct": 9,
+        "direct -> direct": 3,
+        "tangent -> tangent": 7,
+        "unclear -> unclear": 3,
+        "background -> unclear": 2,
+        "unclear -> tangent": 2
+      },
+      "false_hidden": []
+    }
+  },
+  "surfaces": {
+    "search": {
+      "records": 231,
+      "unique_videos": 230,
+      "reference_counts": {
+        "direct": 123,
+        "background": 42,
+        "tangent": 36,
+        "unclear": 30
+      },
+      "collapsed": 25,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 165,
+      "useful_total": 165,
+      "tangents_removed": 25,
+      "tangents_total": 36,
+      "tangent_removal_rate": 0.6944444444444444,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.7402597402597403,
+      "confusion": {
+        "direct -> direct": 116,
+        "direct -> background": 3,
+        "background -> tangent": 5,
+        "background -> unclear": 15,
+        "background -> background": 14,
+        "tangent -> tangent": 33,
+        "unclear -> unclear": 8,
+        "tangent -> unclear": 2,
+        "unclear -> direct": 18,
+        "background -> direct": 8,
+        "tangent -> background": 1,
+        "direct -> unclear": 4,
+        "unclear -> tangent": 4
+      },
+      "false_hidden": []
+    },
+    "watch-recommendation": {
+      "records": 150,
+      "unique_videos": 146,
+      "reference_counts": {
+        "tangent": 63,
+        "unclear": 35,
+        "direct": 23,
+        "background": 29
+      },
+      "collapsed": 45,
+      "false_hidden_useful": 0,
+      "false_hidden_unclear": 0,
+      "useful_preserved": 52,
+      "useful_total": 52,
+      "tangents_removed": 45,
+      "tangents_total": 63,
+      "tangent_removal_rate": 0.7142857142857143,
+      "collapse_precision": 1.0,
+      "four_class_agreement": 0.7266666666666667,
+      "confusion": {
+        "tangent -> tangent": 58,
+        "unclear -> unclear": 21,
+        "unclear -> background": 1,
+        "direct -> background": 1,
+        "background -> background": 9,
+        "background -> unclear": 14,
+        "unclear -> tangent": 5,
+        "direct -> direct": 21,
+        "background -> tangent": 2,
+        "tangent -> background": 2,
+        "unclear -> direct": 8,
+        "tangent -> unclear": 3,
+        "background -> direct": 4,
+        "direct -> unclear": 1
+      },
+      "false_hidden": []
+    }
+  }
+}

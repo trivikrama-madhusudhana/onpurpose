@@ -1,0 +1,48 @@
+{
+  "recordId": "figma-button:watch:Do-w990lv4s",
+  "caseId": "figma-button",
+  "split": "development",
+  "decision": {
+    "label": "unclear",
+    "confidence": 0.49,
+    "tangentProbability": 0.01,
+    "collapseProbability": 0,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "keep",
+        "probabilities": {
+          "collapse": 0.02,
+          "keep": 0.98
+        },
+        "confidence": 0.97
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "unclear",
+        "probabilities": {
+          "background": 0.19,
+          "direct": 0.18,
+          "tangent": 0.01,
+          "unclear": 0.62
+        },
+        "confidence": 0.49
+      }
+    },
+    "usage": {
+      "input_tokens": 904,
+      "output_tokens": 79,
+      "cost": 0.000037968
+    },
+    "id": "gen-dec-1789995411-0sxu3YhHbAiW45whdE60",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 494,
+  "cached": true,
+  "rubricVersion": "idea-flow-relevance-v4",
+  "reparsedFrom": "idea-flow-relevance-v2"
+}

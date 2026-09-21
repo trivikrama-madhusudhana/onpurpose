@@ -1,0 +1,48 @@
+{
+  "recordId": "nextjs-hydration:watch:TrtQWsSrB_c",
+  "caseId": "nextjs-hydration",
+  "split": "development",
+  "decision": {
+    "label": "tangent",
+    "confidence": 0.76,
+    "tangentProbability": 0.82,
+    "collapseProbability": 0.76,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "collapse",
+        "probabilities": {
+          "keep": 0.24,
+          "collapse": 0.76
+        },
+        "confidence": 0.52
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "tangent",
+        "probabilities": {
+          "background": 0,
+          "unclear": 0.18,
+          "direct": 0,
+          "tangent": 0.82
+        },
+        "confidence": 0.76
+      }
+    },
+    "usage": {
+      "input_tokens": 892,
+      "output_tokens": 79,
+      "cost": 0.000037464
+    },
+    "id": "gen-dec-1789995395-jgAUFceokmhMKdBvvtKE",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 450,
+  "cached": true,
+  "rubricVersion": "idea-flow-relevance-v4",
+  "reparsedFrom": "idea-flow-relevance-v2"
+}

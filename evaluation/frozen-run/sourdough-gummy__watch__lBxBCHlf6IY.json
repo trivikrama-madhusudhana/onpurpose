@@ -1,0 +1,48 @@
+{
+  "recordId": "sourdough-gummy:watch:lBxBCHlf6IY",
+  "caseId": "sourdough-gummy",
+  "split": "development",
+  "decision": {
+    "label": "unclear",
+    "confidence": 0.5,
+    "tangentProbability": 0.06,
+    "collapseProbability": 0,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "keep",
+        "probabilities": {
+          "collapse": 0.03,
+          "keep": 0.97
+        },
+        "confidence": 0.94
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "unclear",
+        "probabilities": {
+          "unclear": 0.62,
+          "tangent": 0.06,
+          "background": 0.31,
+          "direct": 0.01
+        },
+        "confidence": 0.5
+      }
+    },
+    "usage": {
+      "input_tokens": 909,
+      "output_tokens": 79,
+      "cost": 0.000038178
+    },
+    "id": "gen-dec-1789995406-xR5tJ0qeSxxM713pd3KJ",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 427,
+  "cached": true,
+  "rubricVersion": "idea-flow-relevance-v4",
+  "reparsedFrom": "idea-flow-relevance-v2"
+}

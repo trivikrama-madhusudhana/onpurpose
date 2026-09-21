@@ -1,0 +1,63 @@
+[
+  {
+    "name": "missing_key_fail_open",
+    "passed": true
+  },
+  {
+    "name": "no_injection_outside_youtube",
+    "passed": true
+  },
+  {
+    "name": "byok_save_clears_input",
+    "passed": true
+  },
+  {
+    "name": "real_jev_collapses_obvious_wrong_topic",
+    "passed": true,
+    "collapsed": 8
+  },
+  {
+    "name": "save_tangent",
+    "passed": true
+  },
+  {
+    "name": "reveal_one",
+    "passed": true
+  },
+  {
+    "name": "reveal_all",
+    "passed": true
+  },
+  {
+    "name": "pause_restores_all",
+    "passed": true
+  },
+  {
+    "name": "goal_change_reclassifies_same_page",
+    "passed": true
+  },
+  {
+    "name": "youtube_spa_navigation_preserves_goal",
+    "passed": true
+  },
+  {
+    "name": "finish_pauses_and_saves_watch_page",
+    "passed": true
+  },
+  {
+    "name": "saved_playback_position_and_key_isolation",
+    "passed": true,
+    "saved": 2,
+    "usage": {
+      "requests": 38,
+      "inputTokens": 34158,
+      "outputTokens": 2984,
+      "cost": 0.001434636
+    }
+  },
+  {
+    "name": "page_script_error_check",
+    "passed": true,
+    "errors": []
+  }
+]

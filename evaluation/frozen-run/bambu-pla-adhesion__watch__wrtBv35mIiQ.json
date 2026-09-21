@@ -1,0 +1,48 @@
+{
+  "recordId": "bambu-pla-adhesion:watch:wrtBv35mIiQ",
+  "caseId": "bambu-pla-adhesion",
+  "split": "development",
+  "decision": {
+    "label": "direct",
+    "confidence": 0.59,
+    "tangentProbability": 0.01,
+    "collapseProbability": 0,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "keep",
+        "probabilities": {
+          "collapse": 0,
+          "keep": 1
+        },
+        "confidence": 1
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "direct",
+        "probabilities": {
+          "tangent": 0.01,
+          "background": 0.04,
+          "unclear": 0.26,
+          "direct": 0.69
+        },
+        "confidence": 0.59
+      }
+    },
+    "usage": {
+      "input_tokens": 905,
+      "output_tokens": 78,
+      "cost": 0.00003801
+    },
+    "id": "gen-dec-1789995416-30b2qO3uLILSwV7aylIt",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 422,
+  "cached": true,
+  "rubricVersion": "idea-flow-relevance-v4",
+  "reparsedFrom": "idea-flow-relevance-v2"
+}

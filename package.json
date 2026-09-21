@@ -1,0 +1,38 @@
+{
+  "name": "idea-flow-youtube",
+  "version": "0.1.4",
+  "private": true,
+  "type": "module",
+  "description": "A desktop Chrome extension that filters YouTube recommendations against a user-defined goal using Jev.",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "eval:collect": "node scripts/collect.mjs",
+    "eval:run": "node scripts/evaluate.mjs",
+    "eval:score": "node scripts/score.mjs",
+    "test:browser": "node scripts/test-browser.mjs"
+  },
+  "devDependencies": {
+    "jsdom": "^26.1.0",
+    "playwright": "1.58.2"
+  },
+  "author": "Trivikrama Madhusudhana",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/trivikrama-madhusudhana/idea-flow.git"
+  },
+  "homepage": "https://github.com/trivikrama-madhusudhana/idea-flow",
+  "bugs": {
+    "url": "https://github.com/trivikrama-madhusudhana/idea-flow/issues"
+  },
+  "keywords": [
+    "chrome-extension",
+    "youtube",
+    "openrouter",
+    "jev",
+    "focus"
+  ],
+  "engines": {
+    "node": ">=22"
+  }
+}

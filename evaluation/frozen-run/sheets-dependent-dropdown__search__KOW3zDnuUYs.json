@@ -1,0 +1,47 @@
+{
+  "recordId": "sheets-dependent-dropdown:search:KOW3zDnuUYs",
+  "caseId": "sheets-dependent-dropdown",
+  "split": "holdout",
+  "decision": {
+    "label": "unclear",
+    "confidence": 0.33,
+    "tangentProbability": 0.01,
+    "collapseProbability": 0,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "keep",
+        "probabilities": {
+          "collapse": 0,
+          "keep": 1
+        },
+        "confidence": 1
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "unclear",
+        "probabilities": {
+          "direct": 0.49,
+          "background": 0.01,
+          "tangent": 0.01,
+          "unclear": 0.49
+        },
+        "confidence": 0.33
+      }
+    },
+    "usage": {
+      "input_tokens": 904,
+      "output_tokens": 79,
+      "cost": 0.000037968
+    },
+    "id": "gen-dec-1789995736-o8Dm746801KowVKAsCj1",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 395,
+  "cached": false,
+  "rubricVersion": "idea-flow-relevance-v4"
+}

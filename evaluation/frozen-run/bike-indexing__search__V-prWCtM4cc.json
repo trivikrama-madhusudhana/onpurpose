@@ -1,0 +1,48 @@
+{
+  "recordId": "bike-indexing:search:V-prWCtM4cc",
+  "caseId": "bike-indexing",
+  "split": "development",
+  "decision": {
+    "label": "direct",
+    "confidence": 0.71,
+    "tangentProbability": 0,
+    "collapseProbability": 0,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "keep",
+        "probabilities": {
+          "collapse": 0,
+          "keep": 1
+        },
+        "confidence": 1
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "direct",
+        "probabilities": {
+          "tangent": 0,
+          "direct": 0.79,
+          "background": 0,
+          "unclear": 0.21
+        },
+        "confidence": 0.71
+      }
+    },
+    "usage": {
+      "input_tokens": 899,
+      "output_tokens": 78,
+      "cost": 0.000037758
+    },
+    "id": "gen-dec-1789995406-TPfPkHMK5BwRZ2093NRB",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 404,
+  "cached": true,
+  "rubricVersion": "idea-flow-relevance-v4",
+  "reparsedFrom": "idea-flow-relevance-v2"
+}

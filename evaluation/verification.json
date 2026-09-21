@@ -1,0 +1,29 @@
+{
+  "verifiedAt": "2026-09-21",
+  "rubric": "idea-flow-relevance-v4",
+  "automatedTests": {
+    "passed": 36,
+    "failed": 0
+  },
+  "liveBrowserChecks": {
+    "passed": 13,
+    "failed": 0,
+    "browser": "Playwright Chromium, fresh signed-out profile, actual extension and Jev requests",
+    "reportedCost": 0.001434636
+  },
+  "sourceHashes": {
+    "src/background.js": "252cda8a6f5615b622903b2995c51cdda1955e7947bbe6c61836014050eeddc0",
+    "src/content.css": "d2dfdb676d08e352c710a2f02d0edc6d2010f29609a360b92625656a1ba1ba04",
+    "src/content.js": "0acbf1b5a3370d46269789c29839f3d15fa7c3ebaf4c724fbe81f3e53a504b13",
+    "src/dom.js": "726899a37627e6d2dde0e46cedc5bc16863185c7a0d341a3f2e7034fba33a65c",
+    "src/jev.js": "aa921ef74124ee6d3831229794fed89c9e333227a7a2c679e97806a485cebb69",
+    "src/options.css": "699c6f37762536de8985e2c29324d7caf59d141b75dbb3ebf44689686e8ca6a2",
+    "src/options.html": "0191fd80e7f0d9039ee086d9199db009f4faa61d324c6eb3e94afe9e6b5cdfaa",
+    "src/options.js": "22b5cbaefa17afecf305e9025098f0d04faf1d57749e4754673840c02f282e3f"
+  },
+  "publication": {
+    "github": false,
+    "chromeWebStore": false,
+    "demoVideo": false
+  }
+}

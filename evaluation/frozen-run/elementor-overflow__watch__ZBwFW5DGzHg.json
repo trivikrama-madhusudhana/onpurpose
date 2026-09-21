@@ -1,0 +1,48 @@
+{
+  "recordId": "elementor-overflow:watch:ZBwFW5DGzHg",
+  "caseId": "elementor-overflow",
+  "split": "development",
+  "decision": {
+    "label": "unclear",
+    "confidence": 0.4,
+    "tangentProbability": 0.02,
+    "collapseProbability": 0,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "keep",
+        "probabilities": {
+          "keep": 0.99,
+          "collapse": 0.01
+        },
+        "confidence": 0.98
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "unclear",
+        "probabilities": {
+          "background": 0.31,
+          "unclear": 0.56,
+          "tangent": 0.02,
+          "direct": 0.11
+        },
+        "confidence": 0.4
+      }
+    },
+    "usage": {
+      "input_tokens": 902,
+      "output_tokens": 79,
+      "cost": 0.000037884
+    },
+    "id": "gen-dec-1789995419-nYg6u2Sk2LYOF1M357fW",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 404,
+  "cached": true,
+  "rubricVersion": "idea-flow-relevance-v4",
+  "reparsedFrom": "idea-flow-relevance-v2"
+}

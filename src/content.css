@@ -1,0 +1,21 @@
+/* Only extension-owned UI is styled. Theme follows YouTube, not the OS. */
+#idea-flow-root{display:block;position:sticky;top:var(--idea-flow-header,56px);margin-top:var(--idea-flow-header,56px);margin-left:var(--idea-flow-inset,0px);z-index:2021;min-width:0}
+#idea-flow-root + ytd-page-manager{margin-top:0!important}
+.idea-flow-collapsed{display:none!important}
+.idea-flow-placeholder,.idea-flow-badge{--if-bg:#f3f6f4;--if-text:#234535;--if-border:#a5bbae;--if-hover:#e2ece6;color-scheme:light;box-sizing:border-box;font:14px/1.5 Roboto,Arial,sans-serif;color:var(--if-text);background:var(--if-bg);border:1px solid var(--if-border);border-inline-start:4px solid var(--if-accent,var(--if-border));opacity:1}
+html[dark] .idea-flow-placeholder,html[dark] .idea-flow-badge{--if-bg:#203028;--if-text:#e6f1ea;--if-border:#698475;--if-hover:#314d3d;color-scheme:dark}
+.idea-flow-placeholder{display:flex;align-items:center;flex-wrap:wrap;gap:10px;padding:14px 16px;margin:8px 0 16px;min-height:72px;width:100%;border-radius:10px}
+.idea-flow-placeholder-label{flex:1 1 190px;min-width:0}.idea-flow-placeholder-label strong{display:block;font-weight:650}.idea-flow-hidden-title{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;font-size:13px;margin-top:3px}
+.idea-flow-placeholder button{min-height:36px;padding:7px 11px;border:1px solid var(--if-border);border-radius:6px;background:var(--if-bg);color:var(--if-text);font:600 13px/1.4 Roboto,Arial,sans-serif;cursor:pointer}
+.idea-flow-placeholder button:hover{background:var(--if-hover)}.idea-flow-placeholder button:focus-visible,.idea-flow-badge summary:focus-visible{outline:3px solid var(--if-text);outline-offset:3px}
+.idea-flow-badge{display:block;position:relative;clear:both;width:fit-content;max-width:min(100%,560px);margin:10px 0;padding:0;border-radius:8px;font-size:13px}
+.idea-flow-badge summary{cursor:pointer;padding:7px 11px;min-height:34px;font-weight:650;list-style-position:inside;overflow-wrap:anywhere}.idea-flow-badge summary:hover{background:var(--if-hover);border-radius:7px}.idea-flow-badge p{font:400 13px/1.55 Roboto,Arial,sans-serif;margin:0;padding:0 12px 12px;max-width:65ch;color:var(--if-text)}
+.idea-flow-direct{--if-bg:#e8f4ed;--if-text:#195437;--if-border:#83a890;--if-hover:#d5eadc;--if-accent:#168044}
+.idea-flow-background{--if-bg:#e8effb;--if-text:#234873;--if-border:#8aa4c6;--if-hover:#d6e4f7;--if-accent:#2563eb}
+.idea-flow-unclear{--if-bg:#fff4cc;--if-text:#6b4800;--if-border:#c89b36;--if-hover:#ffecad;--if-accent:#a66c00}
+.idea-flow-tangent{--if-bg:#fde9ed;--if-text:#8a203c;--if-border:#ce8b9c;--if-hover:#f9d5df;--if-accent:#c1375d}
+html[dark] .idea-flow-direct{--if-bg:#193b2b;--if-text:#c2efd5;--if-border:#679b7d;--if-hover:#244d38;--if-accent:#4ade80}
+html[dark] .idea-flow-background{--if-bg:#19344d;--if-text:#d1e7ff;--if-border:#6f98bd;--if-hover:#274761;--if-accent:#60a5fa}
+html[dark] .idea-flow-unclear{--if-bg:#403216;--if-text:#ffe3a0;--if-border:#a8873e;--if-hover:#53421e;--if-accent:#fbbf24}
+html[dark] .idea-flow-tangent{--if-bg:#432330;--if-text:#ffd1dd;--if-border:#b37588;--if-hover:#58303f;--if-accent:#fb7185}
+ytd-rich-grid-row .idea-flow-placeholder,ytd-rich-grid-renderer .idea-flow-placeholder{flex:1 1 260px;max-width:420px;margin:8px 12px 24px}

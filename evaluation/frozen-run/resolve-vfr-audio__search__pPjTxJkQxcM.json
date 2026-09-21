@@ -1,0 +1,47 @@
+{
+  "recordId": "resolve-vfr-audio:search:pPjTxJkQxcM",
+  "caseId": "resolve-vfr-audio",
+  "split": "holdout",
+  "decision": {
+    "label": "unclear",
+    "confidence": 0.86,
+    "tangentProbability": 0.06,
+    "collapseProbability": 0,
+    "reasonCode": "metadata_only"
+  },
+  "response": {
+    "model": "typesafe/jev-1.13-20260917",
+    "answers": {
+      "filter_action": {
+        "type": "choice",
+        "choice": "keep",
+        "probabilities": {
+          "collapse": 0.05,
+          "keep": 0.95
+        },
+        "confidence": 0.89
+      },
+      "relevance": {
+        "type": "choice",
+        "choice": "unclear",
+        "probabilities": {
+          "unclear": 0.89,
+          "tangent": 0.06,
+          "direct": 0.04,
+          "background": 0.01
+        },
+        "confidence": 0.86
+      }
+    },
+    "usage": {
+      "input_tokens": 908,
+      "output_tokens": 79,
+      "cost": 0.000038136
+    },
+    "id": "gen-dec-1789995725-BUH07PNPsBPUMhWLhDHm",
+    "provider": "TypeSafe"
+  },
+  "elapsedMs": 558,
+  "cached": false,
+  "rubricVersion": "idea-flow-relevance-v4"
+}

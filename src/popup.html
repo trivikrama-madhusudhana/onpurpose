@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Idea Flow</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <header><span class="brand">Idea Flow</span><span class="scope">YouTube only</span></header>
+    <h1>What are you here to figure out?</h1>
+    <p id="loading">Loading your session...</p>
+    <div id="session" hidden>
+      <form id="goal-form">
+        <label class="sr-only" for="goal">Your YouTube goal</label>
+        <textarea id="goal" rows="3" maxlength="600" placeholder="Fix the hydration error in my Next.js app" required></textarea>
+        <button id="start" class="primary" type="submit">Start on YouTube</button>
+      </form>
+      <div class="actions">
+        <button id="pause" type="button">Pause</button>
+        <button id="open-youtube" type="button">Open YouTube</button>
+      </div>
+      <div id="refresh-help" class="help-box" hidden>
+        <p>If the goal bar is missing, refresh YouTube. Tabs opened before installing the extension need a refresh.</p>
+        <button id="refresh-youtube" type="button">Refresh YouTube</button>
+      </div>
+      <p id="session-status" class="help"></p>
+      <footer>
+        <p id="usage" class="help">No recorded requests.</p>
+        <button id="saved" class="text-button" type="button">Saved videos</button>
+        <button id="settings" class="text-button" type="button">Settings and usage</button>
+      </footer>
+    </div>
+    <button id="setup" type="button" hidden>Add your OpenRouter key</button>
+    <p id="status" role="status" aria-live="polite"></p>
+  </main>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{
+  "version": "0.1.4",
+  "tests": {
+    "passed": 62,
+    "failed": 0
+  },
+  "checks": [
+    "Below-threshold tangent decisions display Relevance uncertain",
+    "Outside your goal labels use the same decision as default hiding",
+    "Show off-topic reveals all classified off-topic cards",
+    "Hide off-topic clears individual reveals",
+    "Newly loaded results respect Show off-topic"
+  ],
+  "liveChromeStatus": "Pending user extension reload; verified in automated DOM tests only.",
+  "modelRubricChanged": false,
+  "probabilityThresholdsChanged": false
+}

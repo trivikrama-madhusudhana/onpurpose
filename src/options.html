@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Idea Flow Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <h1>Settings and usage</h1>
+    <p class="intro">For desktop Chrome on YouTube. Your key stays in this browser profile. This extension does not run in the YouTube phone app.</p>
+    <section id="ready" hidden aria-labelledby="ready-heading">
+      <h2 id="ready-heading">You are ready to use YouTube</h2>
+      <p>Open YouTube and enter the problem you want to solve in the Idea Flow bar beneath the search box. Choose <strong>Set goal</strong> to start.</p>
+      <p><a class="primary-link" href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer">Open YouTube</a></p>
+      <p class="help">Already have YouTube open? Reload that tab once after installing or updating the extension. The toolbar popup also lets you set a goal and pause filtering.</p>
+    </section>
+    <section aria-labelledby="key-heading">
+      <h2 id="key-heading">Your OpenRouter key</h2>
+      <p id="key-status">Checking settings…</p>
+      <form id="key-form">
+        <label for="api-key">New API key</label>
+        <input id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your OpenRouter API key" maxlength="512">
+        <p class="help">Saved only in this Chrome profile, never synced. Your key is used by the extension’s background service to call OpenRouter. It is not shared with YouTube.</p>
+        <div class="actions"><button id="save-key" type="submit">Save key</button><button id="remove-key" class="secondary" type="button">Remove key</button></div>
+      </form>
+      <p id="status" role="status" aria-live="polite"></p>
+      <p class="help">Filtering sends your goal and video titles, channel names and available descriptions to OpenRouter and the Jev provider. Requests use your account’s credits. There is no extension analytics service.</p>
+      <p class="help">Metadata can be incomplete or misleading. Videos classified as uncertain remain visible. You can pause filtering or reveal a collapsed video at any time.</p>
+    </section>
+    <section aria-labelledby="usage-heading">
+      <h2 id="usage-heading">Reported usage</h2>
+      <p id="usage">No requests yet.</p>
+      <p class="help">Totals cover successful responses recorded by this extension. OpenRouter’s account balance is the billing authority.</p>
+    </section>
+  </main>
+  <script type="module" src="options.js"></script>
+</body>
+</html>
