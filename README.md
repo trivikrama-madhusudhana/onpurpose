@@ -50,7 +50,7 @@ npm ci
 npm test
 ```
 
-The release source passes 63 automated tests. Earlier versions also have recorded live YouTube checks; the current release's latest interface changes have not yet had a fresh full live check. See the [verification record](evaluation/RESULTS.md#public-release-014).
+The release source passes 64 automated tests. Earlier versions also have recorded live YouTube checks; the current release's latest interface changes have not yet had a fresh full live check. See the [verification record](evaluation/RESULTS.md#public-release-014).
 
 There is no bundler. Chrome loads `manifest.json` and the local files in `src/`. To reproduce the frozen relevance evaluation without making paid requests:
 

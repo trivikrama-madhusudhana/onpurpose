@@ -59,10 +59,15 @@
   }
   function scheduleLayout() { if (!layoutFrame) layoutFrame = requestAnimationFrame(syncLayout); }
   function mount() {
-    if (host.isConnected) return;
     const pageManager = document.querySelector('ytd-page-manager');
-    if (pageManager?.parentElement) pageManager.parentElement.insertBefore(host, pageManager);
-    else document.body.prepend(host);
+    if (pageManager?.parentElement) {
+      if (host.parentElement === pageManager.parentElement && host.nextElementSibling === pageManager) return;
+      // YouTube can create its page manager after our initial body fallback.
+      pageManager.parentElement.insertBefore(host, pageManager);
+    } else {
+      if (host.isConnected) return;
+      document.body.prepend(host);
+    }
     syncLayout();
   }
   mount();

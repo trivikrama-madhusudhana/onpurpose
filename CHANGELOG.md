@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.1 (2026-09-21)
+
+Keep the goal bar in page flow when YouTube loads its page container after the extension. This prevents the bar from covering the top of the player or recommendations on a fresh watch-page load. All 64 automated tests pass.
+
 ## 0.2.0 (2026-09-21)
 
 Adopt the OnPurpose name across the extension, documentation, downloads and repository. Existing keys, goals, bookmarks and usage totals remain in Chrome storage when updating the existing installation. Includes the modern watch-page label layout fix.

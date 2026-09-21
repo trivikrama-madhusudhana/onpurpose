@@ -11,8 +11,8 @@ vm.runInNewContext(source, context);
 const {videoURL, extractVideo, metadataKey, shouldCollapse, displayLabel} = context.module.exports;
 const fixture = `<ytd-app><ytd-page-manager><ytd-video-renderer><a href="/watch?v=abcDEF12345"><span>9:08</span></a><a id="video-title" href="/watch?v=abcDEF12345">Fix a hydration error</a><ytd-channel-name><a>Example developer</a></ytd-channel-name><div class="metadata-snippet-text">App Router explanation</div></ytd-video-renderer></ytd-page-manager></ytd-app>`;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-async function setup({url = 'https://www.youtube.com/results?search_query=nextjs', state = {}, handler} = {}) {
-  const dom = new JSDOM(fixture, {url, runScripts: 'outside-only', pretendToBeVisual: true});
+async function setup({url = 'https://www.youtube.com/results?search_query=nextjs', state = {}, handler, markup = fixture} = {}) {
+  const dom = new JSDOM(markup, {url, runScripts: 'outside-only', pretendToBeVisual: true});
   const w = dom.window;
   w.HTMLElement.prototype.getBoundingClientRect = () => ({width: 320, height: 150, top: 100, bottom: 250});
   let current = {goal: 'Fix Next.js hydration errors', active: true, hasKey: true, saved: [], ...state};
@@ -63,6 +63,32 @@ test('cache includes goal and full metadata; uncertain tangents fail open', () =
 test('script does not mount or message outside YouTube', async () => {
   const env = await setup({url:'https://example.com/watch?v=abcDEF12345'});
   assert.equal(env.root, undefined); assert.equal(env.messages.length, 0); env.dom.window.close();
+});
+
+test('a goal bar mounted before YouTube loads relocates into page flow without repeated DOM moves', async () => {
+  const env = await setup({markup:'<ytd-app></ytd-app>',state:{active:false}});
+  try {
+    const host = env.root.host;
+    assert.equal(host.parentElement, env.w.document.body);
+    const app = env.w.document.querySelector('ytd-app');
+    const pageManager = env.w.document.createElement('ytd-page-manager');
+    app.append(pageManager);
+    await sleep(400);
+    assert.equal(host.parentElement, app, 'The connected fallback bar must move inside YouTube');
+    assert.equal(host.nextElementSibling, pageManager, 'The bar must precede the content in normal flow');
+    assert.equal(env.w.document.querySelectorAll('#onpurpose-root').length, 1);
+    let moves = 0;
+    const observer = new env.w.MutationObserver(records => {
+      moves += records.filter(record => [...record.addedNodes, ...record.removedNodes].includes(host)).length;
+    });
+    observer.observe(app, {childList:true});
+    env.w.dispatchEvent(new env.w.Event('scroll'));
+    await sleep(400);
+    env.w.dispatchEvent(new env.w.Event('scroll'));
+    await sleep(400);
+    observer.disconnect();
+    assert.equal(moves, 0, 'An already positioned bar must not be reinserted on each scan');
+  } finally { env.dom.window.close(); }
 });
 
 test('tangent replacement is reversible and pause restores original cards', async () => {
