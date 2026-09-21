@@ -394,3 +394,33 @@ test('show off-topic reveals all cards and hide off-topic resets individual reve
     assert.equal(env.w.document.querySelectorAll('.onpurpose-badge.onpurpose-tangent').length,0);
   } finally { env.dom.window.close(); }
 });
+
+test('YouTube class resets and removed decorations are repaired without undoing reveal or repeating requests', async () => {
+  const env = await setup();
+  try {
+    await sleep(370);
+    const doc = env.w.document;
+    const requests = env.messages.filter(message => message.type === 'CLASSIFY').length;
+    assert.equal(env.card.classList.contains('onpurpose-collapsed'), true);
+    env.card.className = 'ytd-item-section-renderer lockup ytLockupViewModelWrapper';
+    await sleep(400);
+    assert.equal(env.card.classList.contains('onpurpose-collapsed'), true);
+    assert.equal(doc.querySelectorAll('.onpurpose-placeholder').length, 1);
+    doc.querySelector('.onpurpose-placeholder').remove();
+    await sleep(400);
+    assert.equal(doc.querySelectorAll('.onpurpose-placeholder').length, 1);
+    doc.querySelector('.onpurpose-placeholder button').click();
+    await sleep(400);
+    assert.equal(env.card.classList.contains('onpurpose-collapsed'), false);
+    doc.querySelector('.onpurpose-badge').remove();
+    await sleep(400);
+    const badge = doc.querySelector('.onpurpose-badge');
+    assert.ok(badge);
+    assert.equal(env.card.classList.contains('onpurpose-collapsed'), false, 'A repaired badge must respect individual reveal');
+    assert.equal(doc.querySelectorAll('.onpurpose-placeholder').length, 0);
+    env.card.className = 'ytd-item-section-renderer lockup';
+    await sleep(750);
+    assert.equal(doc.querySelector('.onpurpose-badge'), badge, 'Unrelated class changes and own paints must not create repaint loops');
+    assert.equal(env.messages.filter(message => message.type === 'CLASSIFY').length, requests);
+  } finally { env.dom.window.close(); }
+});

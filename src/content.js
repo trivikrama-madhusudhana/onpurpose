@@ -264,7 +264,11 @@
       }
       const result = decisions.get(key);
       const paintKey = result ? JSON.stringify([result, showTangents, record.revealed, state.saved.some(video => video.id === record.video.id)]) : null;
-      if (result && (record.applied !== paintKey || (!record.badge && !record.placeholder))) {
+      const collapsed = shouldCollapse(result, showTangents, record.revealed);
+      const intact = collapsed
+        ? card.classList.contains('onpurpose-collapsed') && record.placeholder?.isConnected && record.placeholder.previousElementSibling === card
+        : !card.classList.contains('onpurpose-collapsed') && record.badge?.isConnected && card.contains(record.badge);
+      if (result && (record.applied !== paintKey || !intact)) {
         paint(record, result); record.applied = paintKey;
       }
       if (!result && !inflight.has(key) && nearViewport(card)) queue.set(video.id, {video, key});
@@ -293,10 +297,21 @@
     }
   }
   const observer = new MutationObserver(mutations => {
+    // YouTube may replace a renderer's classes or remove our decorations while
+    // retaining the same video. Compare final state so our own paints do not loop.
+    const repairNeeded = ready() && mutations.some(m => {
+      if (m.type === 'attributes' && m.attributeName === 'class') {
+        const record = records.get(m.target);
+        const result = record && decisions.get(record.key);
+        return result && shouldCollapse(result, showTangents, record.revealed) !== m.target.classList.contains('onpurpose-collapsed');
+      }
+      if (m.type !== 'childList') return false;
+      return [...m.removedNodes].some(node => node.nodeType === 1 && node.matches('.onpurpose-badge,.onpurpose-placeholder') && !node.isConnected && [...records.values()].some(record => record.badge === node || record.placeholder === node));
+    });
     // Ignore our own badges and placeholders to avoid self-triggering scan loops.
-    if (mutations.some(m => !host.contains(m.target) && !m.target.parentElement?.closest?.('.onpurpose-placeholder,.onpurpose-badge') && !m.target.closest?.('.onpurpose-placeholder,.onpurpose-badge') && (m.type !== 'childList' || [...m.addedNodes, ...m.removedNodes].some(n => n.nodeType !== 1 || !n.className?.toString().startsWith('onpurpose-'))))) scheduleScan();
+    if (repairNeeded || mutations.some(m => !(m.type === 'attributes' && m.attributeName === 'class') && !host.contains(m.target) && !m.target.parentElement?.closest?.('.onpurpose-placeholder,.onpurpose-badge') && !m.target.closest?.('.onpurpose-placeholder,.onpurpose-badge') && (m.type !== 'childList' || [...m.addedNodes, ...m.removedNodes].some(n => n.nodeType !== 1 || !n.className?.toString().startsWith('onpurpose-'))))) scheduleScan();
   });
-  const observePage = () => observer.observe(document.body, {childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['href', 'title']});
+  const observePage = () => observer.observe(document.body, {childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['href', 'title', 'class']});
   observePage();
   window.addEventListener('scroll', scheduleScan, {passive: true});
   window.addEventListener('resize', () => {scheduleScan(); scheduleLayout();}, {passive:true});

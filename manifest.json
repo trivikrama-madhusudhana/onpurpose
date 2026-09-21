@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "OnPurpose",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Filter YouTube recommendations against your goal using Jev and your own OpenRouter API key.",
   "permissions": [
     "storage"

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2 (2026-09-21)
+
+Restore hiding and relevance labels if YouTube redraws a card and removes the extension decoration. Individual reveal and show/hide-all choices are preserved, without new API requests. All 65 automated tests pass.
+
 ## 0.2.1 (2026-09-21)
 
 Keep the goal bar in page flow when YouTube loads its page container after the extension. This prevents the bar from covering the top of the player or recommendations on a fresh watch-page load. All 64 automated tests pass.
