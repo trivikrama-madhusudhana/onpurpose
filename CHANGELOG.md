@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3 (2026-09-21)
+
+Prepare the Chrome Web Store package with a value-first summary, a padded store icon, and clearer privacy and support information. Encrypt locally saved settings with AES-GCM and migrate existing settings automatically. Filtering behavior is unchanged.
+
 ## 0.2.2 (2026-09-21)
 
 Restore hiding and relevance labels if YouTube redraws a card and removes the extension decoration. Individual reveal and show/hide-all choices are preserved, without new API requests. All 65 automated tests pass.

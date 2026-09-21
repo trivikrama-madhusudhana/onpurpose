@@ -1,6 +1,6 @@
 # Reproducing the evaluation
 
-These scripts use the extension's own DOM extractor and Jev request/parser. They do not install an extension, publish a repository, or create reference labels automatically.
+The collector, evaluator and scorer use the extension's own DOM extractor and Jev request/parser. They do not install an extension or create reference labels automatically. The browser test loads the extension into a temporary Chromium profile.
 
 Run commands from the repository root after `npm ci`. Node 22+, `curl`, and Playwright Chromium are required for live work. Offline scoring does not need a key or browser.
 

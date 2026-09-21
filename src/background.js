@@ -1,3 +1,4 @@
+import { encryptedStorage } from './storage.js';
 import { buildRequest, parseDecision, MODEL, RUBRIC_VERSION, ENDPOINT } from './jev.js';
 
 const MAX_VIDEOS = 40;
@@ -32,7 +33,7 @@ function normalizeVideo(video) {
 function number(value) { return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : 0; }
 
 /** Dependencies are injectable so tests never need a real account or network. */
-export function createController(chromeAPI, fetchAPI = globalThis.fetch) {
+export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage = chromeAPI.storage.local) {
   let state = { key: '', goal: '', active: false, saved: [], usage: { ...DEFAULT_USAGE } };
   let revision = 0;
   let keyRevision = 0;
@@ -42,8 +43,8 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch) {
   const queue = [];
   let running = 0;
   const ready = (async () => {
-    await chromeAPI.storage.local.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
-    const stored = await chromeAPI.storage.local.get(['key', 'goal', 'active', 'saved', 'usage']);
+    await storage.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
+    const stored = await storage.get(['key', 'goal', 'active', 'saved', 'usage']);
     state = {
       key: typeof stored.key === 'string' ? stored.key : '',
       goal: typeof stored.goal === 'string' ? stored.goal.slice(0, 1000) : '',
@@ -133,7 +134,7 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch) {
     return { opened: false, reloaded: reload, needsReload: reload ? false : !(await contentIsReady(tab)) };
   }
   async function write(patch) {
-    await chromeAPI.storage.local.set(patch);
+    await storage.set(patch);
     Object.assign(state, patch);
     if (['key', 'goal', 'active', 'saved'].some(field => Object.hasOwn(patch, field))) void notifyYouTubeTabs();
   }
@@ -283,7 +284,7 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch) {
 }
 
 if (globalThis.chrome?.runtime?.onMessage && globalThis.chrome?.storage?.local) {
-  const controller = createController(chrome);
+  const controller = createController(chrome, globalThis.fetch, encryptedStorage(chrome.storage.local));
   controller.ready.catch(() => {});
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     controller.handle(message, sender).then(sendResponse, () => sendResponse({ error: 'Request failed. Videos remain visible.' }));

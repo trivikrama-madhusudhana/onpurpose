@@ -37,7 +37,7 @@ Keep the extracted folder somewhere permanent. Chrome reads the extension from t
 
 ## Cost and privacy
 
-Your goal and video metadata are sent directly to OpenRouter and its Jev provider. Your key is stored in this Chrome profile and used only by the extension's background service. There is no developer server, account, analytics or subscription. Saved videos stay local. See [PRIVACY.md](PRIVACY.md).
+Your goal and video metadata are sent directly to OpenRouter and its Jev provider. Your key is encrypted and stored in this Chrome profile and used only by the extension's background service. There is no developer server, account, analytics or subscription. Saved videos stay local. See [PRIVACY.md](PRIVACY.md).
 
 Settings shows reported usage, not your OpenRouter account balance. The frozen 381-card sample reported about $0.015 for one pass, excluding development retries and separate checks. That is a historical measurement, not a price promise. The extension uses OpenRouter's alpha decisions endpoint and `~typesafe/jev-latest`, so provider availability and behaviour can change.
 

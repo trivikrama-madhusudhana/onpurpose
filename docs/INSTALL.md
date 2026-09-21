@@ -67,3 +67,7 @@ Download the new extension ZIP from [Releases](https://github.com/trivikrama-mad
 Open `chrome://extensions`, find OnPurpose, and choose **Remove**. Removing the extension also removes its locally stored key, goal, bookmarks and usage totals. You can revoke its API key separately on OpenRouter.
 
 For help, [open an issue](https://github.com/trivikrama-madhusudhana/onpurpose/issues) with your Chrome version, extension version and what went wrong. Never include your API key. Hide personal information before attaching screenshots.
+
+### Saved settings could not be opened securely
+
+Reload OnPurpose at `chrome://extensions`, then open its settings again. If the error persists, contact trivikrama@theautomationcraft.com before reinstalling. Reinstalling removes saved videos and settings.
