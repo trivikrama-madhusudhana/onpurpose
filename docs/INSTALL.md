@@ -1,42 +1,50 @@
 # Install OnPurpose in Chrome
 
-You do not need to code or use a terminal. You need desktop Google Chrome and an OpenRouter account with an API key and available credits. Chrome on a phone and the YouTube phone app are not supported.
+Use Google Chrome on a computer. You do not need to code. This does not work in Chrome on a phone or in the YouTube phone app.
 
-## 1. Download and extract
+You will also need an OpenRouter account. The steps below explain how to connect it. OnPurpose is free. OpenRouter charges for use.
+
+## 1. Download and open the folder
 
 1. Click [Download OnPurpose](https://github.com/trivikrama-madhusudhana/onpurpose/releases/latest/download/onpurpose-extension.zip).
-2. Open the downloaded ZIP. On a Mac, double-click it. On Windows, right-click it and choose **Extract All**.
-3. Move the extracted `onpurpose-extension` folder somewhere you will keep it, such as Documents. Open it once and check that you can see a file named `manifest.json` and a folder named `src`.
+2. Find `onpurpose-extension.zip` in your Downloads folder.
+3. Open it. **Mac:** double-click the ZIP. **Windows:** right-click it and choose **Extract All**.
+4. Open the new folder. Look for a file named `manifest.json`. If you see another `onpurpose-extension` folder instead, open that folder too.
+5. Move the folder containing `manifest.json` to **Documents**. Keep it there. Chrome needs it to run OnPurpose.
 
-Choose the extension ZIP above, not GitHub's automatically generated “Source code” ZIP. The extension ZIP contains only the files Chrome needs.
+Use the download link above. You do not need GitHub's **Code** button or the **Source code** downloads.
 
 ## 2. Add it to Chrome
 
-1. Copy `chrome://extensions`, paste it into Chrome's address bar, and press Enter.
-2. Turn on **Developer mode** at the top right. This allows Chrome to load the open-source folder you downloaded.
+1. Open Chrome. Paste `chrome://extensions` into the address bar at the top. Press **Enter**.
+2. Turn on **Developer mode** at the top right.
 3. Click **Load unpacked** at the top left.
-4. Select the extracted `onpurpose-extension` folder that contains `manifest.json`. Select the folder, not the ZIP or the `src` folder.
-5. Check that an **OnPurpose** card appears and its switch is on.
-6. Click Chrome's puzzle-piece Extensions icon, then the pin next to OnPurpose so it stays easy to find.
+4. Select the folder you moved to Documents. Choose the folder, not the ZIP file or the `src` folder inside it.
+5. You should now see **OnPurpose** in the list. Check that its switch is on.
+6. Click the puzzle-piece icon near Chrome's address bar. Click the pin next to **OnPurpose** to keep its icon visible.
 
-Do not move or delete the extracted folder after installation. This is a manually installed extension, so updates are manual too. A work-managed browser may prevent this installation; ask your administrator rather than trying to bypass that restriction.
+Do not move or delete the folder after this. If a work computer blocks installation, ask your IT team for help.
 
-## 3. Add your OpenRouter key
+## 3. Connect OpenRouter
 
-1. Open [OpenRouter's API keys page](https://openrouter.ai/settings/keys) and sign in or create your account.
-2. Create an API key. Give it a recognisable name such as “OnPurpose” and set a spending limit if offered. Copy the key. Keep it private.
-3. Make sure your OpenRouter account has available credits and access to Jev. The extension is free; model requests use your credits.
-4. Click OnPurpose in the Chrome toolbar. The first click opens **Settings and usage**.
-5. Paste the key into **New API key**, then choose **Save key**. The field clears after saving; that is expected.
+An API key connects OnPurpose to your OpenRouter account. Treat it like a password.
+
+1. Open [OpenRouter](https://openrouter.ai/settings/keys). Sign in or create an account.
+2. Create an API key. Name it “OnPurpose” and copy it.
+3. Make sure your OpenRouter account has credit. You can set a spending limit for the key.
+4. In Chrome, click the puzzle-piece icon. Click **OnPurpose**. Its settings will open.
+5. Paste the key into **New API key**. Click **Save key**.
+
+The key box becomes empty after saving. This is normal.
 
 The key stays in this Chrome profile. It is sent to OpenRouter to authenticate requests and is not given to YouTube. You can replace or remove it in Settings and usage.
 
 ## 4. Use it on YouTube
 
-1. Open [YouTube](https://www.youtube.com/). If it was already open, refresh the page.
-2. Find **Your YouTube goal** below YouTube's search box.
-3. Enter a specific problem, such as “Fix buzzing strings when I play barre chords,” and choose **Set goal**.
-4. Search or browse normally. Allow time for the visible cards to be checked. New cards are checked as you scroll.
+1. Open [YouTube](https://www.youtube.com/). Refresh the page if it was already open.
+2. Find **Your YouTube goal** below the search box.
+3. Type what you want to learn, such as “Learn to fold a fitted sheet.” Click **Set goal**.
+4. Search or browse as usual. Give OnPurpose a moment to label the videos.
 
 Relevant and background videos remain visible. Uncertain videos remain visible too. Videos labelled **Outside your goal** are replaced by their title and a **Reveal video** button. You can reveal one, or use **Show off-topic** at the top to see all of them. **Hide off-topic** hides them all again.
 
@@ -52,7 +60,14 @@ Off removes the goal bar, labels and reminder popup, restores hidden videos, and
 
 ## Update
 
-Download the new extension ZIP from [Releases](https://github.com/trivikrama-madhusudhana/onpurpose/releases/latest). Replace the files inside your existing extension folder with the new files. Keep the same folder path. Open `chrome://extensions`, click the reload arrow on the OnPurpose card, then refresh YouTube. Your saved key and bookmarks remain in Chrome storage. Do not remove and reinstall the extension just to update it.
+1. [Download the latest ZIP](https://github.com/trivikrama-madhusudhana/onpurpose/releases/latest/download/onpurpose-extension.zip).
+2. Open it as you did when installing.
+3. Copy the files inside the new extension folder into your existing folder in Documents. Choose **Replace** when asked.
+4. In Chrome, open `chrome://extensions`.
+5. Find **OnPurpose**. Click its circular reload arrow.
+6. Refresh your open YouTube tabs.
+
+Keep the same folder in Documents. Do not remove OnPurpose from Chrome to update it. Your saved key and videos will stay in place.
 
 ## Troubleshooting
 
