@@ -5,6 +5,10 @@ const MAX_VIDEOS = 40;
 const MAX_CACHE = 600;
 const CONCURRENCY = 3;
 const YOUTUBE_ORIGIN = 'https://www.youtube.com';
+const DEFAULT_REMINDER_MINUTES = 10;
+const emptyReminderSession = () => ({ elapsedMs: 0, dismissed: false, relevantIds: [], lastRelevant: null });
+const positiveMinutes = value => Number.isSafeInteger(value) && value > 0;
+const generation = value => Number.isSafeInteger(value) && value >= 0 ? value : 0;
 const DEFAULT_USAGE = { requests: 0, inputTokens: 0, outputTokens: 0, cost: 0 };
 
 function youtubeURL(value) {
@@ -34,7 +38,8 @@ function number(value) { return typeof value === 'number' && Number.isFinite(val
 
 /** Dependencies are injectable so tests never need a real account or network. */
 export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage = chromeAPI.storage.local) {
-  let state = { key: '', goal: '', active: false, saved: [], usage: { ...DEFAULT_USAGE } };
+  let state = { key: '', goal: '', active: false, saved: [], reminderMinutes: DEFAULT_REMINDER_MINUTES, reminderGeneration: 0, usage: { ...DEFAULT_USAGE } };
+  let reminderTabs = {};
   let revision = 0;
   let keyRevision = 0;
   let mutation = Promise.resolve();
@@ -44,17 +49,24 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
   let running = 0;
   const ready = (async () => {
     await storage.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
-    const stored = await storage.get(['key', 'goal', 'active', 'saved', 'usage']);
+    const stored = await storage.get(['key', 'goal', 'active', 'saved', 'usage', 'reminderMinutes', 'reminderGeneration']);
     state = {
       key: typeof stored.key === 'string' ? stored.key : '',
       goal: typeof stored.goal === 'string' ? stored.goal.slice(0, 1000) : '',
       active: stored.active === true,
+      reminderMinutes: positiveMinutes(stored.reminderMinutes) ? stored.reminderMinutes : DEFAULT_REMINDER_MINUTES,
+      reminderGeneration: generation(stored.reminderGeneration),
       saved: Array.isArray(stored.saved) ? stored.saved.slice(-200) : [],
       usage: Object.fromEntries(Object.keys(DEFAULT_USAGE).map(k => [k, number(stored.usage?.[k])])),
     };
+    if (chromeAPI.storage.session) {
+      await chromeAPI.storage.session.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
+      const saved = await chromeAPI.storage.session.get('reminderTabs');
+      reminderTabs = saved?.reminderTabs && typeof saved.reminderTabs === 'object' ? saved.reminderTabs : {};
+    }
   })();
   function publicState() {
-    return { goal: state.goal, active: state.active, hasKey: Boolean(state.key), saved: state.saved.map(v => ({ ...v })), usage: { ...state.usage } };
+    return { goal: state.goal, active: state.active, reminderMinutes: state.reminderMinutes, reminderGeneration: state.reminderGeneration, hasKey: Boolean(state.key), saved: state.saved.map(v => ({ ...v })), usage: { ...state.usage } };
   }
   function trustedOptions(sender) {
     return sender?.id === chromeAPI.runtime.id && sender?.url === chromeAPI.runtime.getURL('src/options.html');
@@ -72,6 +84,31 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
     const result = mutation.then(fn);
     mutation = result.catch(() => {});
     return result;
+  }
+  async function saveReminderTabs(next) {
+    const bounded = Object.fromEntries(Object.entries(next).slice(-50));
+    if (chromeAPI.storage.session) await chromeAPI.storage.session.set({ reminderTabs: bounded });
+    reminderTabs = bounded;
+  }
+  function sanitizeReminderSession(session) {
+    if (!session || !Number.isFinite(session.elapsedMs) || session.elapsedMs < 0 || session.elapsedMs > Number.MAX_SAFE_INTEGER ||
+        typeof session.dismissed !== 'boolean' || !Array.isArray(session.relevantIds) || session.relevantIds.length > 200 ||
+        session.relevantIds.some(id => typeof id !== 'string' || !/^[\w-]{1,100}$/.test(id))) throw new Error('Invalid reminder session.');
+    let lastRelevant = null;
+    if (session.lastRelevant) {
+      const video = normalizeVideo(session.lastRelevant);
+      const url = new URL(video.url);
+      if (!((url.pathname === '/watch' && url.searchParams.get('v') === video.id) || url.pathname === '/shorts/' + video.id)) throw new Error('Invalid reminder video.');
+      lastRelevant = { id: video.id, title: video.title, url: video.url, timestamp: video.timestamp || 0 };
+    }
+    return { elapsedMs: session.elapsedMs, dismissed: session.dismissed, relevantIds: [...new Set(session.relevantIds)], lastRelevant };
+  }
+  async function forgetTab(id) {
+    return serialize(async () => {
+      await ready;
+      const next = { ...reminderTabs }; delete next[id];
+      await saveReminderTabs(next);
+    });
   }
   async function openSaved() {
     const url = chromeAPI.runtime.getURL('src/saved.html');
@@ -136,7 +173,7 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
   async function write(patch) {
     await storage.set(patch);
     Object.assign(state, patch);
-    if (['key', 'goal', 'active', 'saved'].some(field => Object.hasOwn(patch, field))) void notifyYouTubeTabs();
+    if (['key', 'goal', 'active', 'saved', 'reminderMinutes', 'reminderGeneration'].some(field => Object.hasOwn(patch, field))) void notifyYouTubeTabs();
   }
   function limited(fn) {
     if (queue.length >= 120) return Promise.reject(new Error('Too many pending videos. Try again shortly.'));
@@ -220,6 +257,28 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
         if (!trustedOptions(sender)) throw new Error('Settings access denied.');
         return publicState();
       }
+      if (message.type === 'GET_REMINDER_SESSION' || message.type === 'SAVE_REMINDER_SESSION') {
+        if (!Number.isInteger(sender.tab?.id) || !youtubeURL(sender.url) || !youtubeURL(sender.tab.url)) throw new Error('Reminder access denied.');
+        return await serialize(async () => {
+          if (message.goal !== state.goal || message.reminderGeneration !== state.reminderGeneration) throw new Error('Goal changed. Please retry.');
+          if (message.type === 'GET_REMINDER_SESSION') {
+            const stored = reminderTabs[sender.tab.id];
+            const session = stored?.goal === state.goal && stored.generation === state.reminderGeneration ? sanitizeReminderSession(stored.session) : emptyReminderSession();
+            return { session: structuredClone(session) };
+          }
+          const session = sanitizeReminderSession(message.session);
+          await saveReminderTabs({ ...reminderTabs, [sender.tab.id]: { goal: state.goal, generation: state.reminderGeneration, session } });
+          return { ok: true };
+        });
+      }
+      if (message.type === 'SAVE_REMINDER_SETTINGS') {
+        if (!trustedOptions(sender)) throw new Error('Settings access denied.');
+        if (!positiveMinutes(message.minutes)) throw new Error('Enter a whole number of minutes, 1 or more.');
+        return await serialize(async () => {
+          await write({ reminderMinutes: message.minutes });
+          return publicState();
+        });
+      }
       if (message.type === 'SAVE_SETTINGS') {
         if (!trustedOptions(sender)) throw new Error('Settings access denied.');
         return await serialize(async () => {
@@ -233,7 +292,8 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
       if (message.type === 'SET_GOAL') return await serialize(async () => {
         if (typeof message.goal !== 'string' || message.goal.length > 1000) throw new Error('Keep the goal under 1,000 characters.');
         const goal = message.goal.trim();
-        await write({ goal, active: Boolean(goal) });
+        await write({ goal, active: Boolean(goal), reminderGeneration: state.reminderGeneration < Number.MAX_SAFE_INTEGER ? state.reminderGeneration + 1 : 0 });
+        await saveReminderTabs({});
         revision++;
         return publicState();
       });
@@ -280,12 +340,13 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
       return { error: safe, results: [] };
     }
   }
-  return { handle, ready };
+  return { handle, ready, forgetTab };
 }
 
 if (globalThis.chrome?.runtime?.onMessage && globalThis.chrome?.storage?.local) {
   const controller = createController(chrome, globalThis.fetch, encryptedStorage(chrome.storage.local));
   controller.ready.catch(() => {});
+  chrome.tabs?.onRemoved?.addListener(id => { controller.forgetTab(id).catch(() => {}); });
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     controller.handle(message, sender).then(sendResponse, () => sendResponse({ error: 'Request failed. Videos remain visible.' }));
     return true;

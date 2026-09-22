@@ -71,3 +71,11 @@ For help, [open an issue](https://github.com/trivikrama-madhusudhana/onpurpose/i
 ### Saved settings could not be opened securely
 
 Reload OnPurpose at `chrome://extensions`, then open its settings again. If the error persists, contact trivikrama@theautomationcraft.com before reinstalling. Reinstalling removes saved videos and settings.
+
+## Change the reminder delay
+
+Open OnPurpose's **Settings**, the same page where you add your OpenRouter API key. Under **Goal reminders**, change the number and choose **Save reminder**. The default is 10 minutes. You can use any positive whole number, such as 1, 5 or 20. Zero, negative numbers and fractions are not accepted.
+
+This counts time spent watching clearly off-topic videos while YouTube has focus. The reminder waits for a browsing break and stays outside the video. Useful or uncertain videos do not trigger it.
+
+Goal reminders currently work on regular YouTube watch pages. Shorts and videos with unreadable metadata do not trigger reminders.

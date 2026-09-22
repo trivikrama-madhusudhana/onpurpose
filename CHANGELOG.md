@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 (2026-09-22)
+
+Add goal check-ins after off-topic viewing, timed for browsing breaks. Reminders default to 10 minutes and can be changed to any positive whole number of minutes in Settings. Relevant and uncertain videos stay uninterrupted. Reminder choices and timing stay in browser memory.
+
 ## 0.2.3 (2026-09-21)
 
 Prepare the Chrome Web Store package with a value-first summary, a padded store icon, and clearer privacy and support information. Encrypt locally saved settings with AES-GCM and migrate existing settings automatically. Filtering behavior is unchanged.

@@ -21,6 +21,14 @@ Your goal stays fixed while you browse. For example, “Fix buzzing strings when
 
 Click a label for an explanation. **Show off-topic** reveals all hidden cards. **Hide off-topic** hides them again, including cards you revealed individually. **Pause filtering** restores the original videos. **Save video** bookmarks a video and its playback position; **Saved videos** opens your local list.
 
+## Goal reminders
+
+OnPurpose can remind you of your goal after time spent watching clearly off-topic videos. It waits for a browsing break and uses the goal bar, leaving the player alone. Relevant and uncertain videos stay uninterrupted. Returning to a relevant video clears the drift timer.
+
+The default is **10 minutes**. Open **Settings**, find **Goal reminders**, enter a positive whole number of minutes and choose **Save reminder**. No seconds or fractions.
+
+Choose **Back to my goal** to return to your last useful video, **This video helps** to correct the current classification, or **Keep exploring** to dismiss reminders for this goal session. **Resume reminders** starts a fresh timer. Timing counts focused YouTube viewing only. Reminder session state stays in browser memory and clears when you start a new goal or restart Chrome.
+
 ## The tricky parts
 
 YouTube reuses cards as you scroll and changes pages without a full reload. The extension matches decisions to the goal and full video metadata, so an old response cannot hide a different video or overwrite a changed goal.

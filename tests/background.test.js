@@ -217,3 +217,66 @@ test('OPEN_SAVED focuses an existing exact saved page and rechecks its URL', asy
   assert.equal((await instance.handle({ type: 'OPEN_SAVED' }, savedSender)).opened, true);
   assert.equal(helper.events.some(e => e.type === 'update'), false);
 });
+
+test('reminder minutes default to ten, validate strictly, and do not change credentials or goals', async () => {
+  for (const stored of [undefined, 0, -1, 1.5, '20', Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+    const instance = setup(undefined, { reminderMinutes: stored });
+    assert.equal((await instance.handle({ type: 'GET_SETTINGS' }, settingsSender)).reminderMinutes, 10);
+  }
+  const instance = setup();
+  for (const minutes of [0, -2, 1.5, '5', null, Infinity, Number.MAX_SAFE_INTEGER + 1]) {
+    assert.match((await instance.handle({ type: 'SAVE_REMINDER_SETTINGS', minutes }, settingsSender)).error, /whole number/);
+  }
+  assert.match((await instance.handle({ type: 'SAVE_REMINDER_SETTINGS', minutes: 5 }, youtubeSender)).error, /denied/);
+  for (const minutes of [1, 5, 25, Number.MAX_SAFE_INTEGER]) {
+    const state = await instance.handle({ type: 'SAVE_REMINDER_SETTINGS', minutes }, settingsSender);
+    assert.equal(state.reminderMinutes, minutes);
+    assert.equal(state.goal, 'Fix a bug');
+    assert.equal(state.hasKey, true);
+    assert.equal(instance.data.key, 'test-key-not-a-real-secret');
+    assert.equal('key' in state, false);
+  }
+});
+
+test('reminder session survives worker restart, is tab scoped and rejects stale goal generations', async () => {
+  const data = { key: 'test-only', goal: 'Fix a bug', active: true }, sessionData = {}, access = [];
+  const chromeAPI = {
+    runtime: { id: 'test-extension', getURL: path => `chrome-extension://test-extension/${path}` },
+    storage: {
+      local: { setAccessLevel: async () => {}, get: async () => structuredClone(data), set: async patch => Object.assign(data, structuredClone(patch)) },
+      session: { setAccessLevel: async value => access.push(value), get: async () => structuredClone(sessionData), set: async patch => Object.assign(sessionData, structuredClone(patch)) },
+    },
+  };
+  let instance = createController(chromeAPI);
+  const sender = { ...youtubeSender, tab: { ...youtubeSender.tab, id: 9 } };
+  const session = { elapsedMs: 420000, dismissed: false, relevantIds: ['useful'], lastRelevant: { ...video('useful'), timestamp: 37 } };
+  const base = { goal: 'Fix a bug', reminderGeneration: 0 };
+  assert.deepEqual(await instance.handle({ ...base, type: 'SAVE_REMINDER_SESSION', session }, sender), { ok: true });
+  assert.equal(data.reminderTabs, undefined);
+  instance = createController(chromeAPI);
+  let restored = await instance.handle({ ...base, type: 'GET_REMINDER_SESSION' }, sender);
+  assert.equal(restored.session.elapsedMs, 420000);
+  assert.match(restored.session.lastRelevant.url, /t=37/);
+  assert.equal((await instance.handle({ ...base, type: 'GET_REMINDER_SESSION' }, { ...sender, tab: { ...sender.tab, id: 10 } })).session.elapsedMs, 0);
+  assert.match((await instance.handle({ ...base, type: 'GET_REMINDER_SESSION' }, settingsSender)).error, /denied/);
+  const reset = await instance.handle({ type: 'SET_GOAL', goal: 'Fix a bug' }, sender);
+  assert.equal(reset.reminderGeneration, 1);
+  assert.match((await instance.handle({ ...base, type: 'SAVE_REMINDER_SESSION', session }, sender)).error, /Goal changed/);
+  assert.equal((await instance.handle({ ...base, reminderGeneration: 1, type: 'GET_REMINDER_SESSION' }, sender)).session.elapsedMs, 0);
+  assert.ok(access.every(value => value.accessLevel === 'TRUSTED_CONTEXTS'));
+});
+
+test('reminder session validates safe return links and removes closed tab state', async () => {
+  const instance = setup();
+  const sender = { ...youtubeSender, tab: { ...youtubeSender.tab, id: 9 } };
+  const base = { goal: 'Fix a bug', reminderGeneration: 0 };
+  const session = { elapsedMs: 1000, dismissed: false, relevantIds: [], lastRelevant: null };
+  for (const invalid of [
+    { ...session, elapsedMs: -1 }, { ...session, elapsedMs: Infinity }, { ...session, dismissed: 'false' },
+    { ...session, relevantIds: ['<script>'] }, { ...session, lastRelevant: { ...video('a'), url: 'https://www.youtube.com/logout' } },
+    { ...session, lastRelevant: { ...video('a'), url: 'https://evil.test/watch?v=a' } },
+  ]) assert.ok((await instance.handle({ ...base, type: 'SAVE_REMINDER_SESSION', session: invalid }, sender)).error);
+  await instance.handle({ ...base, type: 'SAVE_REMINDER_SESSION', session }, sender);
+  await instance.forgetTab(9);
+  assert.equal((await instance.handle({ ...base, type: 'GET_REMINDER_SESSION' }, sender)).session.elapsedMs, 0);
+});

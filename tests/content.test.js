@@ -5,13 +5,14 @@ import vm from 'node:vm';
 import {JSDOM} from 'jsdom';
 const source = fs.readFileSync(new URL('../src/content.js', import.meta.url), 'utf8');
 const domSource = fs.readFileSync(new URL('../src/dom.js', import.meta.url), 'utf8');
+const reminderSource = fs.readFileSync(new URL('../src/reminders.js', import.meta.url), 'utf8');
 const context = {module: {exports: {}}, URL};
 vm.runInNewContext(domSource, context);
 vm.runInNewContext(source, context);
 const {videoURL, extractVideo, metadataKey, shouldCollapse, displayLabel} = context.module.exports;
 const fixture = `<ytd-app><ytd-page-manager><ytd-video-renderer><a href="/watch?v=abcDEF12345"><span>9:08</span></a><a id="video-title" href="/watch?v=abcDEF12345">Fix a hydration error</a><ytd-channel-name><a>Example developer</a></ytd-channel-name><div class="metadata-snippet-text">App Router explanation</div></ytd-video-renderer></ytd-page-manager></ytd-app>`;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
-async function setup({url = 'https://www.youtube.com/results?search_query=nextjs', state = {}, handler, markup = fixture} = {}) {
+async function setup({url = 'https://www.youtube.com/results?search_query=nextjs', state = {}, handler, markup = fixture, initialize} = {}) {
   const dom = new JSDOM(markup, {url, runScripts: 'outside-only', pretendToBeVisual: true});
   const w = dom.window;
   w.HTMLElement.prototype.getBoundingClientRect = () => ({width: 320, height: 150, top: 100, bottom: 250});
@@ -26,7 +27,9 @@ async function setup({url = 'https://www.youtube.com/results?search_query=nextjs
     if (message.type === 'CLASSIFY') return {results: message.videos.map(v => ({id: v.id, label: 'tangent', confidence: .95, tangentProbability: .95, collapseProbability: .95}))};
     return {ok: true};
   }}};
+  initialize?.(w);
   w.eval(domSource);
+  w.eval(reminderSource);
   w.eval(source);
   await sleep(380);
   return {dom, w, messages, listeners, root: w.document.getElementById('onpurpose-root')?.shadowRoot, card: w.document.querySelector('ytd-video-renderer')};
@@ -423,4 +426,140 @@ test('YouTube class resets and removed decorations are repaired without undoing 
     assert.equal(doc.querySelector('.onpurpose-badge'), badge, 'Unrelated class changes and own paints must not create repaint loops');
     assert.equal(env.messages.filter(message => message.type === 'CLASSIFY').length, requests);
   } finally { env.dom.window.close(); }
+});
+
+const watchFixture = `<ytd-app><ytd-page-manager><ytd-watch-flexy video-id="abcDEF12345"><div id="movie_player"><video></video></div><ytd-watch-metadata><h1>Weekend bike tour</h1><div id="owner"><div id="channel-name">Example rider</div></div><div id="description-inline-expander">A ride through the hills.</div></ytd-watch-metadata>${fixture}</ytd-watch-flexy></ytd-page-manager></ytd-app>`;
+async function reminderSetup({saved={elapsedMs:59000},handler,state={}}={}) {
+  let now=100000, focused=true, hidden=false, paused=false, fullscreen=null;
+  const env=await setup({url:'https://www.youtube.com/watch?v=abcDEF12345',markup:watchFixture,state:{reminderMinutes:1,reminderGeneration:7,...state},handler:message=>{
+    if (handler) {const response=handler(message);if(response!==undefined)return response;}
+    if(message.type==='GET_REMINDER_SESSION')return {session:{dismissed:false,relevantIds:[],lastRelevant:null,...saved}};
+  },initialize:w=>{
+    w.Date.now=()=>now;
+    w.document.hasFocus=()=>focused;
+    Object.defineProperty(w.document,'hidden',{get:()=>hidden});
+    Object.defineProperty(w.document,'fullscreenElement',{get:()=>fullscreen});
+    const player=w.document.querySelector('video');
+    Object.defineProperty(player,'paused',{get:()=>paused});
+    Object.defineProperty(player,'ended',{get:()=>false});
+    player.currentTime=123;
+    player.pause=()=>{throw new Error('Reminders must never pause playback');};
+  }});
+  return {...env,player:env.w.document.querySelector('video'), async tick(delta=1000,type='play') {now+=delta;if(type==='pause')paused=true;env.w.document.querySelector('video').dispatchEvent(new env.w.Event(type));await sleep(10);},
+    async visibility(value){hidden=value;env.w.document.dispatchEvent(new env.w.Event('visibilitychange'));await sleep(10);},
+    async focus(value){focused=value;env.w.dispatchEvent(new env.w.Event(value?'focus':'blur'));await sleep(10);},
+    async fullscreen(value){fullscreen=value?env.w.document.querySelector('#movie_player'):null;env.w.document.dispatchEvent(new env.w.Event('fullscreenchange'));await sleep(10);}};
+}
+
+test('current-video reminder waits for a break, and This video helps resets drift and overrides matching cards', async () => {
+  const env=await reminderSetup();
+  try {
+    assert.equal(env.messages.filter(m=>m.type==='CLASSIFY' && m.videos.some(v=>v.title==='Weekend bike tour')).length,0,'Unstable initial watch metadata is not classified');
+    await env.tick();
+    const currentRequests=()=>env.messages.filter(m=>m.type==='CLASSIFY' && m.videos.some(v=>v.title==='Weekend bike tour'));
+    assert.equal(currentRequests().length,1);
+    assert.equal(currentRequests()[0].videos[0].description,'A ride through the hills.');
+    await env.tick();
+    assert.equal(env.root.querySelector('#reminder').hidden,true,'Reaching the delay must not interrupt playback');
+    await env.tick(250,'pause');
+    assert.equal(env.root.querySelector('#reminder').hidden,false);
+    assert.match(env.root.querySelector('#reminder-text').textContent,/You came here to Fix Next.js hydration errors\. Still working on that\?/);
+    assert.equal(env.root.querySelector('#video-helps').hidden,false);
+    env.root.querySelector('#video-helps').click();await sleep(350);
+    assert.equal(env.root.querySelector('#reminder').hidden,true);
+    assert.equal(env.card.classList.contains('onpurpose-collapsed'),false);
+    assert.equal(env.card.querySelector('.onpurpose-badge summary').textContent,'Relevant to your goal');
+    const saved=env.messages.filter(m=>m.type==='SAVE_REMINDER_SESSION').at(-1);
+    assert.equal(saved.reminderGeneration,7);
+    assert.equal(saved.session.elapsedMs,0);
+    assert.deepEqual([...saved.session.relevantIds],['abcDEF12345']);
+    assert.equal(saved.session.lastRelevant.timestamp,123);
+    await env.tick();assert.equal(currentRequests().length,1);
+    assert.equal(env.player.currentTime,123);
+  } finally {env.dom.window.close();}
+});
+
+test('feed navigation offers a reminder; Keep exploring and Resume reminders persist the session choice', async () => {
+  const env=await reminderSetup();
+  try {
+    await env.tick();await env.tick();
+    env.w.history.pushState({},'', '/results?search_query=nextjs');
+    env.w.document.dispatchEvent(new env.w.Event('yt-navigate-finish'));await sleep(20);
+    assert.equal(env.root.querySelector('#reminder').hidden,false);
+    assert.equal(env.root.querySelector('#video-helps').hidden,true);
+    env.root.querySelector('#keep-exploring').click();await sleep(10);
+    assert.equal(env.root.querySelector('#reminder').hidden,true);
+    assert.equal(env.root.querySelector('#resume-reminders').hidden,false);
+    assert.equal(env.messages.filter(m=>m.type==='SAVE_REMINDER_SESSION').at(-1).session.dismissed,true);
+    env.root.querySelector('#resume-reminders').click();await sleep(10);
+    const saved=env.messages.filter(m=>m.type==='SAVE_REMINDER_SESSION').at(-1).session;
+    assert.equal(saved.dismissed,false);assert.equal(saved.elapsedMs,0);
+    assert.equal(env.root.querySelector('#resume-reminders').hidden,true);
+  } finally {env.dom.window.close();}
+});
+
+test('current-video reminders hide in background, fullscreen, and while filtering is paused', async () => {
+  const env=await reminderSetup({saved:{elapsedMs:61000}});
+  try {
+    await env.tick();assert.equal(env.root.querySelector('#reminder').hidden,false);
+    await env.focus(false);assert.equal(env.root.querySelector('#reminder').hidden,true);
+    await env.focus(true);assert.equal(env.root.querySelector('#reminder').hidden,false);
+    await env.visibility(true);assert.equal(env.root.querySelector('#reminder').hidden,true);
+    await env.visibility(false);assert.equal(env.root.querySelector('#reminder').hidden,false);
+    await env.fullscreen(true);assert.equal(env.root.querySelector('#reminder').hidden,true);
+    assert.equal(env.root.host.style.display,'none');
+    await env.fullscreen(false);assert.equal(env.root.querySelector('#reminder').hidden,false);
+    env.root.querySelector('#pause').click();await sleep(20);
+    assert.equal(env.root.querySelector('#reminder').hidden,true);
+  } finally {env.dom.window.close();}
+});
+
+test('stale watch metadata and late current-video results cannot prompt for a new URL', async () => {
+  let release;
+  const env=await reminderSetup({saved:{elapsedMs:61000},handler:message=>{
+    if(message.type==='CLASSIFY' && message.videos.some(video=>video.title==='Weekend bike tour'))return new Promise(resolve=>{release=()=>resolve({results:message.videos.map(video=>({id:video.id,label:'tangent',confidence:.99,tangentProbability:.99,collapseProbability:.99}))});});
+  }});
+  try {
+    await env.tick();assert.ok(release);
+    env.w.history.pushState({},'','/watch?v=xyzABC12345');
+    env.w.document.dispatchEvent(new env.w.Event('yt-navigate-finish'));await sleep(20);
+    release();await env.tick();
+    assert.equal(env.root.querySelector('#reminder').hidden,true);
+    assert.equal(env.messages.filter(m=>m.type==='CLASSIFY' && m.videos.some(v=>v.id==='xyzABC12345')).length,0,'Old renderer metadata must not classify the new URL');
+  } finally {env.dom.window.close();}
+});
+
+test('same-goal generation changes discard delayed current-video classifications and reminder state', async () => {
+  let generation=7, release, currentRequests=0;
+  const env=await reminderSetup({saved:{elapsedMs:61000},handler:message=>{
+    if(message.type==='GET_STATE')return {goal:'Fix Next.js hydration errors',active:true,hasKey:true,saved:[],reminderMinutes:1,reminderGeneration:generation};
+    if(message.type==='GET_REMINDER_SESSION')return {session:{elapsedMs:generation===7?61000:0,dismissed:false,relevantIds:[],lastRelevant:null}};
+    if(message.type==='CLASSIFY' && message.videos.some(video=>video.title==='Weekend bike tour') && currentRequests++===0)return new Promise(resolve=>{release=()=>resolve({results:message.videos.map(video=>({id:video.id,label:'tangent',confidence:.99,tangentProbability:.99,collapseProbability:.99}))});});
+  }});
+  try {
+    await env.tick();assert.ok(release);
+    generation=8;env.listeners[0]({type:'STATE_CHANGED'},{id:'test-extension'},()=>{});await sleep(20);
+    release();await env.tick();
+    assert.equal(env.root.querySelector('#reminder').hidden,true);
+    const reads=env.messages.filter(message=>message.type==='GET_REMINDER_SESSION');
+    assert.equal(reads.at(-1).reminderGeneration,8);
+    await env.tick(1000,'pause');
+    assert.equal(env.root.querySelector('#reminder').hidden,true,'A new session must not inherit the previous session drift');
+  } finally {env.dom.window.close();}
+});
+
+test('pagehide immediately flushes drift, and BFCache restoration excludes time away', async () => {
+  const env=await reminderSetup();
+  try {
+    await env.tick();await env.tick();await env.tick();
+    const saves=()=>env.messages.filter(message=>message.type==='SAVE_REMINDER_SESSION');
+    assert.equal(saves().at(-1).session.elapsedMs,60000,'Ordinary ticks throttle writes');
+    env.w.dispatchEvent(new env.w.PageTransitionEvent('pagehide',{persisted:true}));
+    assert.equal(saves().at(-1).session.elapsedMs,61000,'Leaving a page dispatches its latest state immediately');
+    await env.tick(600000);
+    env.w.dispatchEvent(new env.w.PageTransitionEvent('pageshow',{persisted:true}));await sleep(20);
+    await env.tick();
+    env.w.dispatchEvent(new env.w.PageTransitionEvent('pagehide',{persisted:true}));
+    assert.equal(saves().at(-1).session.elapsedMs,61000,'Time away from the restored page must not accrue');
+  } finally {env.dom.window.close();}
 });

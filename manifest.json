@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "OnPurpose",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Stay focused on YouTube. Set a goal and hide off-topic recommendations until you choose to reveal them.",
   "permissions": [
     "storage"
@@ -21,6 +21,7 @@
       ],
       "js": [
         "src/dom.js",
+        "src/reminders.js",
         "src/content.js"
       ],
       "css": [

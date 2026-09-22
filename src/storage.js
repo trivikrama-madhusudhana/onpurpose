@@ -1,5 +1,5 @@
 /** Encrypt persisted settings. The non-exportable device key stays in extension IndexedDB. */
-const FIELDS = ['key', 'goal', 'active', 'saved', 'usage'];
+const FIELDS = ['key', 'goal', 'active', 'saved', 'usage', 'reminderMinutes', 'reminderGeneration'];
 const RECORD = 'encryptedStateV1';
 export async function deviceKey() {
   const db = await new Promise((resolve, reject) => {

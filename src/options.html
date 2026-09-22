@@ -30,6 +30,15 @@
       <p class="help">Filtering sends your goal and video titles, channel names and available descriptions to OpenRouter and the Jev provider. Requests use your account’s credits. There is no extension analytics service.</p>
       <p class="help">Metadata can be incomplete or misleading. Videos classified as uncertain remain visible. You can pause filtering or reveal a collapsed video at any time.</p>
     </section>
+    <section aria-labelledby="reminder-heading">
+      <h2 id="reminder-heading">Goal reminders</h2>
+      <form id="reminder-form" novalidate>
+        <label class="reminder-setting" for="reminder-minutes">Remind me after <input id="reminder-minutes" type="text" inputmode="numeric" autocomplete="off" value="10" aria-describedby="reminder-help reminder-status"> minutes off topic</label>
+        <p id="reminder-help" class="help">A reminder appears at a browsing break after this much time on off-topic videos. Useful and uncertain videos do not trigger reminders.</p>
+        <button id="save-reminder" type="submit">Save reminder</button>
+      </form>
+      <p id="reminder-status" role="status" aria-live="polite"></p>
+    </section>
     <section aria-labelledby="usage-heading">
       <h2 id="usage-heading">Reported usage</h2>
       <p id="usage">No requests yet.</p>
