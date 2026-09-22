@@ -280,3 +280,61 @@ test('reminder session validates safe return links and removes closed tab state'
   await instance.forgetTab(9);
   assert.equal((await instance.handle({ ...base, type: 'GET_REMINDER_SESSION' }, sender)).session.elapsedMs, 0);
 });
+
+test('master off persists independently of filtering pause, key, goal, bookmarks and reminder delay', async () => {
+  let calls = 0;
+  const instance = setup(async () => { calls++; return answer(); }, { saved: [{ id: 'a', title: 'Saved' }], reminderMinutes: 5 });
+  const popup = { id: 'test-extension', url: 'chrome-extension://test-extension/src/popup.html' };
+  assert.equal((await instance.handle({ type: 'GET_STATE' }, youtubeSender)).enabled, true);
+  const off = await instance.handle({ type: 'SET_ENABLED', enabled: false }, popup);
+  assert.equal(off.enabled, false); assert.equal(off.active, true); assert.equal(off.hasKey, true);
+  assert.equal(off.goal, 'Fix a bug'); assert.equal(off.saved[0].id, 'a'); assert.equal(off.reminderMinutes, 5);
+  assert.equal(instance.data.enabled, false);
+  assert.match((await instance.handle(request([video('a')]), youtubeSender)).error, /off/); assert.equal(calls, 0);
+  const restarted = setup(undefined, instance.data);
+  assert.equal((await restarted.handle({ type: 'GET_STATE' }, youtubeSender)).enabled, false);
+  await instance.handle({ type: 'SET_ENABLED', enabled: true }, popup);
+  assert.equal((await instance.handle(request([video('a')]), youtubeSender)).results.length, 1);assert.equal(calls, 1);
+  await instance.handle({ type: 'SET_ACTIVE', active: false }, youtubeSender);
+  await instance.handle({ type: 'SET_ENABLED', enabled: false }, popup);
+  assert.equal((await instance.handle({ type: 'SET_ENABLED', enabled: true }, popup)).active, false);
+});
+
+test('only trusted popup or settings can change master switch, and invalid values preserve state', async () => {
+  const instance = setup();
+  assert.match((await instance.handle({ type: 'SET_ENABLED', enabled: false }, youtubeSender)).error, /denied/);
+  for (const enabled of [undefined, 0, 'false', null]) assert.match((await instance.handle({ type: 'SET_ENABLED', enabled }, settingsSender)).error, /Invalid/);
+  assert.equal((await instance.handle({ type: 'GET_STATE' }, youtubeSender)).enabled, true);
+  assert.equal((await instance.handle({ type: 'SET_ENABLED', enabled: false }, settingsSender)).enabled, false);
+});
+
+test('switching off aborts running requests and prevents queued requests from reaching provider', async () => {
+  let calls = 0;const signals=[];
+  const instance = setup(async (_url, options) => {
+    calls++;signals.push(options.signal);
+    return new Promise((_resolve,reject) => options.signal.addEventListener('abort',()=>reject(new Error('aborted')),{once:true}));
+  });
+  const pending = instance.handle(request(['a','b','c','d','e'].map(video)), youtubeSender);
+  await tick();assert.equal(calls,3);
+  await instance.handle({type:'SET_ENABLED',enabled:false},settingsSender);
+  assert.equal(signals.every(signal=>signal.aborted),true);
+  assert.ok((await pending).error);await tick();assert.equal(calls,3);
+});
+
+test('action menu and badge mirror master state and menu toggle preserves credentials', async () => {
+  const entries = new Map(), badges=[], titles=[], notifications=[];
+  const runtime = {id:'test-extension',getURL:path=>`chrome-extension://test-extension/${path}`,sendMessage:async message=>notifications.push(message)};
+  const menus = {
+    update(id,props,done){if(!entries.has(id)){runtime.lastError={message:'missing'};done();delete runtime.lastError}else{entries.set(id,{...entries.get(id),...props});done()}},
+    create(props,done){entries.set(props.id,props);done()},
+  };
+  const instance=setup(undefined,{}, {runtime,contextMenus:menus,action:{setBadgeText(props,done){badges.push(props.text);done()},setTitle(props,done){titles.push(props.title);done()}}});
+  await instance.ready;
+  assert.deepEqual(entries.get('onpurpose-power').contexts,['action']);
+  assert.equal(entries.get('onpurpose-power').title,'Turn OnPurpose off');
+  await instance.setEnabled();
+  assert.equal(entries.get('onpurpose-power').title,'Turn OnPurpose on');assert.equal(badges.at(-1),'OFF');
+  assert.match(titles.at(-1),/off/);assert.equal(notifications.at(-1).type,'STATE_CHANGED');
+  assert.equal(instance.data.key,'test-key-not-a-real-secret');
+  await instance.setEnabled();assert.equal(badges.at(-1),'');assert.equal(entries.size,1);
+});

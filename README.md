@@ -21,13 +21,19 @@ Your goal stays fixed while you browse. For example, “Fix buzzing strings when
 
 Click a label for an explanation. **Show off-topic** reveals all hidden cards. **Hide off-topic** hides them again, including cards you revealed individually. **Pause filtering** restores the original videos. **Save video** bookmarks a video and its playback position; **Saved videos** opens your local list.
 
+## Turn OnPurpose on or off
+
+Use the **On / Off** switch in the toolbar popup, or right-click the OnPurpose toolbar icon and choose **Turn OnPurpose off** or **Turn OnPurpose on**. Off removes the goal bar, labels and reminders, restores hidden videos and stops new model requests. It also aborts requests in progress, although requests already sent may still incur provider charges.
+
+Your key, goal, saved videos, reminder delay and filtering pause state are kept. Turn OnPurpose on to restore your previous setup without reloading YouTube. If filtering was paused, it stays paused.
+
 ## Goal reminders
 
-OnPurpose can remind you of your goal after time spent watching clearly off-topic videos. It waits for a browsing break and uses the goal bar, leaving the player alone. Relevant and uncertain videos stay uninterrupted. Returning to a relevant video clears the drift timer.
+After enough time watching clearly off-topic videos, a centered popup appears over the video while playback continues. It works in normal view and fullscreen. Relevant and uncertain videos do not trigger reminders. Returning to a relevant video clears the timer.
 
 The default is **10 minutes**. Open **Settings**, find **Goal reminders**, enter a positive whole number of minutes and choose **Save reminder**. No seconds or fractions.
 
-Choose **Back to my goal** to return to your last useful video, **This video helps** to correct the current classification, or **Keep exploring** to dismiss reminders for this goal session. **Resume reminders** starts a fresh timer. Timing counts focused YouTube viewing only. Reminder session state stays in browser memory and clears when you start a new goal or restart Chrome.
+Choose **Back to my goal** to return to your last useful video, **This video helps** to correct the current classification, or **Keep exploring** to dismiss reminders for this goal session. Close the popup with **X** or **Esc** to restart the timer. **Resume reminders** starts a fresh timer after Keep exploring. Timing counts focused YouTube playback only. Reminder session state stays in browser memory and clears when you start a new goal or restart Chrome.
 
 ## The tricky parts
 
@@ -58,7 +64,7 @@ npm ci
 npm test
 ```
 
-The release source passes 65 automated tests. Earlier versions also have recorded live YouTube checks; the current release's latest interface changes have not yet had a fresh full live check. See the [verification record](evaluation/RESULTS.md#public-release-014).
+The automated suite checks filtering, state changes, reminders and UI behavior using local fixtures. Browser checks against local fixtures do not establish that every layout works on live YouTube. Earlier live observations are recorded in the [verification record](evaluation/RESULTS.md#public-release-014); they are not a full live check of the current release.
 
 There is no bundler. Chrome loads `manifest.json` and the local files in `src/`. To reproduce the frozen relevance evaluation without making paid requests:
 

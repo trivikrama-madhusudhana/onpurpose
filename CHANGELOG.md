@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1 (2026-09-22)
+
+Show goal reminders in a centered popup over the video when the off-topic timer expires, including during fullscreen playback. Close the popup to restart the timer. Add an On/Off switch in the toolbar popup and Chrome extension menu. Turning OnPurpose off restores YouTube and stops new requests while keeping your saved settings.
+
 ## 0.3.0 (2026-09-22)
 
 Add goal check-ins after off-topic viewing, timed for browsing breaks. Reminders default to 10 minutes and can be changed to any positive whole number of minutes in Settings. Relevant and uncertain videos stay uninterrupted. Reminder choices and timing stay in browser memory.

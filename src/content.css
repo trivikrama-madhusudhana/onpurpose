@@ -1,6 +1,6 @@
 /* Only extension-owned UI is styled. Theme follows YouTube, not the OS. */
 #onpurpose-root{display:block;position:sticky;top:var(--onpurpose-header,56px);margin-top:var(--onpurpose-header,56px);margin-left:var(--onpurpose-inset,0px);z-index:2021;min-width:0}
-#onpurpose-root + ytd-page-manager{margin-top:0!important}
+#onpurpose-root:not([hidden]) + ytd-page-manager{margin-top:0!important}
 .onpurpose-collapsed{display:none!important}
 .onpurpose-placeholder,.onpurpose-badge{--if-bg:#f3f6f4;--if-text:#234535;--if-border:#a5bbae;--if-hover:#e2ece6;color-scheme:light;box-sizing:border-box;font:14px/1.5 Roboto,Arial,sans-serif;color:var(--if-text);background:var(--if-bg);border:1px solid var(--if-border);border-inline-start:4px solid var(--if-accent,var(--if-border));opacity:1}
 html[dark] .onpurpose-placeholder,html[dark] .onpurpose-badge{--if-bg:#203028;--if-text:#e6f1ea;--if-border:#698475;--if-hover:#314d3d;color-scheme:dark}

@@ -15,9 +15,11 @@ test('default delay is ten minutes and any positive safe integer minute value wo
   assert.equal(clock.advance(0,{...watching,minutes:Number.MAX_SAFE_INTEGER},true).show,false);
 });
 
-test('continuous off-topic watching arms only at a natural break', () => {
+test('continuous off-topic watching shows a reminder immediately at the configured threshold', () => {
   const clock = createSession();
-  for (let now=0;now<=61000;now+=1000) assert.equal(clock.advance(now,watching).show,false);
+  for (let now=0;now<60000;now+=1000) assert.equal(clock.advance(now,watching).show,false);
+  assert.equal(clock.advance(60000,watching).show,true,'A playing off-topic video needs no pause or navigation');
+  assert.equal(clock.advance(61000,watching).show,true);
   assert.equal(clock.snapshot().elapsedMs,61000);
   assert.equal(clock.advance(61200,{...watching,playing:false},true).show,true);
   assert.equal(clock.snapshot().elapsedMs,61200);
@@ -71,11 +73,24 @@ test('navigation to another off-topic video waits for its classification before 
   assert.equal(clock.advance(63000,{...next,kind:'offTopic'}).show,true);
 });
 
-test('returning to a feed is a natural break, while unknown pages and fullscreen never show a prompt', () => {
+test('returning to a feed shows an eligible reminder while unknown pages remain quiet', () => {
   const clock=createSession({elapsedMs:61000});
   assert.equal(clock.advance(0,{...watching,kind:'uncertain',page:'other',watchId:null}).show,false);
-  assert.equal(clock.advance(1000,{...watching,kind:'uncertain',page:'feed',watchId:null,fullscreen:true}).show,false);
+  assert.equal(clock.advance(1000,{...watching,page:'other',watchId:null}).show,false);
   assert.equal(clock.advance(2000,{...watching,kind:'uncertain',page:'feed',watchId:null}).show,true);
+});
+
+test('fullscreen off-topic watching shows at the threshold, with focus and relevance safeguards intact', () => {
+  const clock=createSession();
+  for(let now=0;now<60000;now+=1000) assert.equal(clock.advance(now,{...watching,fullscreen:true}).show,false);
+  assert.equal(clock.advance(60000,{...watching,fullscreen:true}).show,true);
+  assert.equal(clock.advance(60000,{...watching,fullscreen:true,visible:false}).show,false);
+  assert.equal(clock.advance(60000,{...watching,fullscreen:true,focused:false}).show,false);
+  assert.equal(clock.advance(60000,{...watching,fullscreen:true,enabled:false}).show,false);
+  assert.equal(clock.advance(60000,{...watching,fullscreen:true,kind:'uncertain'}).show,false);
+  assert.equal(clock.advance(60000,{...watching,fullscreen:true}).show,true);
+  assert.equal(clock.advance(60000,{...watching,fullscreen:true,kind:'relevant'}).show,false);
+  assert.equal(clock.snapshot().elapsedMs,0);
 });
 
 test('keep exploring persists dismissal and resume starts a fresh timer', () => {
@@ -104,10 +119,10 @@ test('manual relevance resets drift and survives snapshot restore with useful pl
   assert.equal(restored.snapshot().relevantIds.length,200);
 });
 
-test('raising the delay hides an available reminder; lowering requires another natural break', () => {
+test('raising the delay hides an available reminder and lowering shows immediately when reached', () => {
   const clock=createSession({elapsedMs:61000});
   assert.equal(clock.advance(0,watching).show,true);
   assert.equal(clock.advance(1000,{...watching,minutes:5}).show,false);
-  assert.equal(clock.advance(2000,watching).show,false);
+  assert.equal(clock.advance(2000,watching).show,true);
   assert.equal(clock.advance(3000,{...watching,playing:false},true).show,true);
 });

@@ -4,17 +4,22 @@ import fs from 'node:fs';
 import vm from 'node:vm';
 import {JSDOM} from 'jsdom';
 const source = fs.readFileSync(new URL('../src/content.js', import.meta.url), 'utf8');
+const styles = fs.readFileSync(new URL('../src/content.css', import.meta.url), 'utf8');
 const domSource = fs.readFileSync(new URL('../src/dom.js', import.meta.url), 'utf8');
 const reminderSource = fs.readFileSync(new URL('../src/reminders.js', import.meta.url), 'utf8');
+const dialogSource = fs.readFileSync(new URL('../src/reminder-dialog.js', import.meta.url), 'utf8');
 const context = {module: {exports: {}}, URL};
 vm.runInNewContext(domSource, context);
 vm.runInNewContext(source, context);
-const {videoURL, extractVideo, metadataKey, shouldCollapse, displayLabel} = context.module.exports;
+const {videoURL, extractVideo, metadataKey, shouldCollapse, displayLabel, backToGoalURL} = context.module.exports;
 const fixture = `<ytd-app><ytd-page-manager><ytd-video-renderer><a href="/watch?v=abcDEF12345"><span>9:08</span></a><a id="video-title" href="/watch?v=abcDEF12345">Fix a hydration error</a><ytd-channel-name><a>Example developer</a></ytd-channel-name><div class="metadata-snippet-text">App Router explanation</div></ytd-video-renderer></ytd-page-manager></ytd-app>`;
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function setup({url = 'https://www.youtube.com/results?search_query=nextjs', state = {}, handler, markup = fixture, initialize} = {}) {
   const dom = new JSDOM(markup, {url, runScripts: 'outside-only', pretendToBeVisual: true});
   const w = dom.window;
+  const stylesheet = w.document.createElement('style');
+  stylesheet.textContent = `ytd-page-manager{margin-top:56px}\n${styles}`;
+  w.document.head.append(stylesheet);
   w.HTMLElement.prototype.getBoundingClientRect = () => ({width: 320, height: 150, top: 100, bottom: 250});
   let current = {goal: 'Fix Next.js hydration errors', active: true, hasKey: true, saved: [], ...state};
   const messages = [], listeners = [];
@@ -30,9 +35,15 @@ async function setup({url = 'https://www.youtube.com/results?search_query=nextjs
   initialize?.(w);
   w.eval(domSource);
   w.eval(reminderSource);
+  w.eval(dialogSource);
   w.eval(source);
   await sleep(380);
-  return {dom, w, messages, listeners, root: w.document.getElementById('onpurpose-root')?.shadowRoot, card: w.document.querySelector('ytd-video-renderer')};
+  return {dom, w, messages, listeners, root: w.document.getElementById('onpurpose-root')?.shadowRoot, card: w.document.querySelector('ytd-video-renderer'),
+    async updateState(patch) {
+      current = {...current, ...patch};
+      for (const listener of listeners) listener({type:'STATE_CHANGED'}, {id:'test-extension'}, () => {});
+      await sleep(20);
+    }};
 }
 
 test('video IDs accept only YouTube watch/shorts URLs', () => {
@@ -41,6 +52,12 @@ test('video IDs accept only YouTube watch/shorts URLs', () => {
   assert.equal(videoURL('https://example.com/watch?v=abcDEF12345'), null);
   assert.equal(videoURL('/playlist?list=abcDEF12345'), null);
   assert.equal(videoURL('/watch?v=%3Cscript%3E'), null);
+});
+
+test('Back to my goal returns a useful video position or searches the goal', () => {
+  assert.equal(backToGoalURL('Fix hydration errors',{id:'abcDEF12345',timestamp:142.9}), 'https://www.youtube.com/watch?v=abcDEF12345&t=142s');
+  assert.equal(backToGoalURL('Fix hydration errors',null), 'https://www.youtube.com/results?search_query=Fix+hydration+errors');
+  assert.equal(backToGoalURL('Fix hydration errors',{id:'<invalid>',timestamp:142}), 'https://www.youtube.com/results?search_query=Fix+hydration+errors');
 });
 
 test('extracts classic and modern video metadata without thumbnail-only titles', () => {
@@ -104,6 +121,124 @@ test('tangent replacement is reversible and pause restores original cards', asyn
   assert.equal(env.card.classList.contains('onpurpose-collapsed'), false);
   assert.equal(env.w.document.querySelector('.onpurpose-badge'),null);
   env.dom.window.close();
+});
+
+test('master off removes the bar, page spacing override, badges, and hidden cards; on restores the goal', async () => {
+  const env = await setup();
+  try {
+    await sleep(370);
+    env.w.document.querySelector('.onpurpose-placeholder button').click();
+    const second = env.card.cloneNode(true);
+    second.querySelector('.onpurpose-badge')?.remove();
+    second.innerHTML = second.innerHTML.replaceAll('abcDEF12345', 'xyzABC12345');
+    env.card.after(second); await sleep(700);
+    assert.ok(env.w.document.querySelector('.onpurpose-badge'));
+    assert.ok(env.w.document.querySelector('.onpurpose-collapsed'));
+    const page = env.w.document.querySelector('ytd-page-manager');
+    assert.equal(env.w.getComputedStyle(page).marginTop, '0px');
+    await env.updateState({enabled:false});
+    assert.equal(env.root.host.hidden, true);
+    assert.equal(env.w.getComputedStyle(env.root.host).display, 'none');
+    assert.equal(env.w.getComputedStyle(page).marginTop, '56px', 'YouTube keeps its native spacing while the bar is off');
+    assert.equal(env.w.document.querySelector('.onpurpose-badge,.onpurpose-placeholder,.onpurpose-collapsed'), null);
+    assert.equal(!reminderOpen(env), true);
+    const requests = env.messages.filter(message => message.type === 'CLASSIFY').length;
+    env.w.dispatchEvent(new env.w.Event('scroll'));
+    env.card.querySelector('#video-title').textContent = 'New off-state title';
+    await sleep(370);
+    assert.equal(env.messages.filter(message => message.type === 'CLASSIFY').length, requests);
+    await env.updateState({enabled:true}); await sleep(700);
+    assert.equal(env.root.host.hidden, false);
+    assert.equal(env.root.querySelector('#goal').value, 'Fix Next.js hydration errors');
+    assert.equal(env.root.querySelector('#pause').textContent, 'Pause filtering');
+    assert.equal(env.w.document.querySelectorAll('.onpurpose-collapsed').length, 2);
+  } finally { env.dom.window.close(); }
+});
+
+test('disabled startup stays invisible through delayed state, navigation, mutations, and fullscreen; on preserves paused filtering', async () => {
+  let releaseInitial, reads = 0, fullscreen = null;
+  const state = {goal:'Fix Next.js hydration errors',enabled:false,active:false,hasKey:true,saved:[]};
+  const env = await setup({state, handler:message => {
+    if (message.type === 'GET_STATE' && reads++ === 0) return new Promise(resolve => { releaseInitial = () => resolve(state); });
+  }, initialize:w => Object.defineProperty(w.document, 'fullscreenElement', {get:() => fullscreen})});
+  try {
+    assert.equal(env.root.host.hidden, true, 'No bar flashes before the saved state is known');
+    assert.equal(env.root.host.style.display, 'none');
+    releaseInitial(); await sleep(20);
+    env.w.history.pushState({}, '', '/watch?v=xyzABC12345');
+    env.w.document.dispatchEvent(new env.w.Event('yt-navigate-start'));
+    env.w.document.dispatchEvent(new env.w.Event('yt-navigate-finish'));
+    env.card.querySelector('#video-title').textContent = 'Changed during disabled navigation';
+    fullscreen = env.card;
+    env.w.document.dispatchEvent(new env.w.Event('fullscreenchange'));
+    fullscreen = null;
+    env.w.document.dispatchEvent(new env.w.Event('fullscreenchange'));
+    env.w.dispatchEvent(new env.w.Event('focus'));
+    env.w.document.dispatchEvent(new env.w.Event('visibilitychange'));
+    env.w.dispatchEvent(new env.w.Event('resize'));
+    await sleep(400);
+    assert.equal(env.root.host.hidden, true);
+    assert.equal(env.root.host.style.display, 'none', 'Leaving fullscreen must not unhide an off bar');
+    assert.equal(env.messages.some(message => ['CLASSIFY','GET_REMINDER_SESSION','SAVE_REMINDER_SESSION'].includes(message.type)), false);
+    assert.equal(env.w.document.querySelector('.onpurpose-badge,.onpurpose-placeholder,.onpurpose-collapsed'), null);
+    await env.updateState({enabled:true}); await sleep(370);
+    assert.equal(env.root.host.hidden, false);
+    assert.equal(env.root.querySelector('#pause').textContent, 'Resume filtering');
+    assert.equal(env.messages.some(message => message.type === 'CLASSIFY'), false);
+    env.root.querySelector('#pause').click(); await sleep(700);
+    assert.equal(env.card.classList.contains('onpurpose-collapsed'), true);
+  } finally { env.dom.window.close(); }
+});
+
+test('late recommendation results while off do not restore filtering or schedule more requests', async () => {
+  let release;
+  const env = await setup({handler:message => message.type === 'CLASSIFY' ? new Promise(resolve => {
+    release = () => resolve({results:message.videos.map(video => ({id:video.id,label:'tangent',confidence:.99,tangentProbability:.99,collapseProbability:.99}))});
+  }) : undefined});
+  try {
+    assert.ok(release);
+    await env.updateState({enabled:false});
+    release(); await sleep(700);
+    assert.equal(env.root.host.hidden, true);
+    assert.equal(env.w.document.querySelector('.onpurpose-badge,.onpurpose-placeholder,.onpurpose-collapsed'), null);
+    assert.equal(env.messages.filter(message => message.type === 'CLASSIFY').length, 1);
+  } finally { env.dom.window.close(); }
+});
+
+test('reactivation starts a fresh batch without waiting for an old request and stale cleanup leaves it intact', async () => {
+  const releases = [];
+  const env = await setup({handler:message => message.type === 'CLASSIFY' ? new Promise(resolve => {
+    releases.push(label => resolve({results:message.videos.map(video => ({id:video.id,label,confidence:.99,tangentProbability:.99,collapseProbability:.99}))}));
+  }) : undefined});
+  try {
+    assert.equal(releases.length, 1);
+    await env.updateState({enabled:false});
+    await env.updateState({enabled:true}); await sleep(350);
+    assert.equal(releases.length, 2, 'The abandoned request cannot block activation');
+    releases[0]('tangent'); await sleep(350);
+    assert.equal(releases.length, 2);
+    assert.equal(env.card.classList.contains('onpurpose-collapsed'), false);
+    assert.match(env.root.querySelector('#status-text').textContent, /Checking 1 videos/);
+    releases[1]('direct'); await sleep(350);
+    assert.equal(env.card.classList.contains('onpurpose-collapsed'), false);
+    assert.equal(env.card.querySelector('.onpurpose-badge summary').textContent, 'Relevant to your goal');
+  } finally { env.dom.window.close(); }
+});
+
+test('master off is applied during a pending local mutation and its late response cannot turn the bar on', async () => {
+  let release;
+  const env = await setup({handler:message => message.type === 'SET_ACTIVE' ? new Promise(resolve => {
+    release = () => resolve({enabled:true,goal:'Fix Next.js hydration errors',active:false,hasKey:true,saved:[]});
+  }) : undefined});
+  try {
+    env.root.querySelector('#pause').click(); await sleep(10);
+    assert.ok(release);
+    await env.updateState({enabled:false});
+    assert.equal(env.root.host.hidden, true, 'External power changes must not wait for a page mutation response');
+    release(); await sleep(400);
+    assert.equal(env.root.host.hidden, true);
+    assert.equal(env.w.document.querySelector('.onpurpose-badge,.onpurpose-placeholder,.onpurpose-collapsed'), null);
+  } finally { env.dom.window.close(); }
 });
 
 test('missing key preserves videos and never calls classification', async () => {
@@ -428,6 +563,8 @@ test('YouTube class resets and removed decorations are repaired without undoing 
   } finally { env.dom.window.close(); }
 });
 
+const reminderRoot = env => env.w.document.getElementById('onpurpose-reminder-dialog-host')?.shadowRoot;
+const reminderOpen = env => reminderRoot(env)?.querySelector('dialog').open === true;
 const watchFixture = `<ytd-app><ytd-page-manager><ytd-watch-flexy video-id="abcDEF12345"><div id="movie_player"><video></video></div><ytd-watch-metadata><h1>Weekend bike tour</h1><div id="owner"><div id="channel-name">Example rider</div></div><div id="description-inline-expander">A ride through the hills.</div></ytd-watch-metadata>${fixture}</ytd-watch-flexy></ytd-page-manager></ytd-app>`;
 async function reminderSetup({saved={elapsedMs:59000},handler,state={}}={}) {
   let now=100000, focused=true, hidden=false, paused=false, fullscreen=null;
@@ -451,7 +588,33 @@ async function reminderSetup({saved={elapsedMs:59000},handler,state={}}={}) {
     async fullscreen(value){fullscreen=value?env.w.document.querySelector('#movie_player'):null;env.w.document.dispatchEvent(new env.w.Event('fullscreenchange'));await sleep(10);}};
 }
 
-test('current-video reminder waits for a break, and This video helps resets drift and overrides matching cards', async () => {
+test('master off rejects late current-video results, stops reminder activity, and safely resumes', async () => {
+  let release, requests = 0;
+  const env = await reminderSetup({saved:{elapsedMs:61000},handler:message => {
+    if (message.type === 'CLASSIFY' && message.videos.some(video => video.title === 'Weekend bike tour') && requests++ === 0) return new Promise(resolve => {
+      release = () => resolve({results:message.videos.map(video => ({id:video.id,label:'tangent',confidence:.99,tangentProbability:.99,collapseProbability:.99}))});
+    });
+  }});
+  try {
+    await env.tick(); assert.ok(release);
+    await env.updateState({enabled:false});
+    const messageCount = env.messages.length;
+    release(); await env.tick(60000); await env.focus(false); await env.focus(true);
+    await env.fullscreen(true); await env.fullscreen(false); await sleep(1200);
+    assert.equal(env.root.host.hidden, true);
+    assert.equal(!reminderOpen(env), true);
+    assert.equal(env.messages.slice(messageCount).some(message => ['CLASSIFY','GET_REMINDER_SESSION','SAVE_REMINDER_SESSION'].includes(message.type)), false);
+    await env.updateState({enabled:true}); await env.tick();
+    assert.equal(requests, 2);
+    assert.equal(env.root.host.hidden, false);
+    assert.equal(!reminderOpen(env), false);
+    await env.updateState({enabled:false});
+    assert.equal(env.root.host.hidden, true);
+    assert.equal(!reminderOpen(env), true);
+  } finally { env.dom.window.close(); }
+});
+
+test('current-video reminder appears at the threshold while playing, and This video helps resets drift and overrides matching cards', async () => {
   const env=await reminderSetup();
   try {
     assert.equal(env.messages.filter(m=>m.type==='CLASSIFY' && m.videos.some(v=>v.title==='Weekend bike tour')).length,0,'Unstable initial watch metadata is not classified');
@@ -460,13 +623,14 @@ test('current-video reminder waits for a break, and This video helps resets drif
     assert.equal(currentRequests().length,1);
     assert.equal(currentRequests()[0].videos[0].description,'A ride through the hills.');
     await env.tick();
-    assert.equal(env.root.querySelector('#reminder').hidden,true,'Reaching the delay must not interrupt playback');
+    assert.equal(!reminderOpen(env),false,'Reaching the delay shows a reminder while playback continues');
+    assert.equal(env.root.querySelector('#reminder'),null,'The goal bar must not duplicate the dialog');
     await env.tick(250,'pause');
-    assert.equal(env.root.querySelector('#reminder').hidden,false);
-    assert.match(env.root.querySelector('#reminder-text').textContent,/You came here to Fix Next.js hydration errors\. Still working on that\?/);
-    assert.equal(env.root.querySelector('#video-helps').hidden,false);
-    env.root.querySelector('#video-helps').click();await sleep(350);
-    assert.equal(env.root.querySelector('#reminder').hidden,true);
+    assert.equal(!reminderOpen(env),false);
+    assert.match(reminderRoot(env).querySelector('#reminder-goal').textContent,/You came here to Fix Next.js hydration errors\./);
+    assert.equal(reminderRoot(env).querySelector('#video-helps').hidden,false);
+    reminderRoot(env).querySelector('#video-helps').click();await sleep(350);
+    assert.equal(!reminderOpen(env),true);
     assert.equal(env.card.classList.contains('onpurpose-collapsed'),false);
     assert.equal(env.card.querySelector('.onpurpose-badge summary').textContent,'Relevant to your goal');
     const saved=env.messages.filter(m=>m.type==='SAVE_REMINDER_SESSION').at(-1);
@@ -479,16 +643,35 @@ test('current-video reminder waits for a break, and This video helps resets drif
   } finally {env.dom.window.close();}
 });
 
+test('closing the reminder with X or Escape resets its timer without disabling reminders', async () => {
+  const env=await reminderSetup({saved:{elapsedMs:61000}});
+  try {
+    await env.tick();assert.equal(reminderOpen(env),true);
+    reminderRoot(env).querySelector('#close-reminder').click();await sleep(10);
+    assert.equal(reminderOpen(env),false);
+    let saved=env.messages.filter(message=>message.type==='SAVE_REMINDER_SESSION').at(-1).session;
+    assert.equal(saved.elapsedMs,0);assert.equal(saved.dismissed,false);
+    for(let i=0;i<60;i++) await env.tick();
+    assert.equal(reminderOpen(env),true);
+    reminderRoot(env).querySelector('dialog').dispatchEvent(new env.w.KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));await sleep(10);
+    assert.equal(reminderOpen(env),false);
+    saved=env.messages.filter(message=>message.type==='SAVE_REMINDER_SESSION').at(-1).session;
+    assert.equal(saved.elapsedMs,0);assert.equal(saved.dismissed,false);
+    assert.equal(env.root.querySelector('#resume-reminders').hidden,true);
+    assert.equal(env.player.currentTime,123);
+  } finally {env.dom.window.close();}
+});
+
 test('feed navigation offers a reminder; Keep exploring and Resume reminders persist the session choice', async () => {
   const env=await reminderSetup();
   try {
     await env.tick();await env.tick();
     env.w.history.pushState({},'', '/results?search_query=nextjs');
     env.w.document.dispatchEvent(new env.w.Event('yt-navigate-finish'));await sleep(20);
-    assert.equal(env.root.querySelector('#reminder').hidden,false);
-    assert.equal(env.root.querySelector('#video-helps').hidden,true);
-    env.root.querySelector('#keep-exploring').click();await sleep(10);
-    assert.equal(env.root.querySelector('#reminder').hidden,true);
+    assert.equal(!reminderOpen(env),false);
+    assert.equal(reminderRoot(env).querySelector('#video-helps').hidden,true);
+    reminderRoot(env).querySelector('#keep-exploring').click();await sleep(10);
+    assert.equal(!reminderOpen(env),true);
     assert.equal(env.root.querySelector('#resume-reminders').hidden,false);
     assert.equal(env.messages.filter(m=>m.type==='SAVE_REMINDER_SESSION').at(-1).session.dismissed,true);
     env.root.querySelector('#resume-reminders').click();await sleep(10);
@@ -498,19 +681,19 @@ test('feed navigation offers a reminder; Keep exploring and Resume reminders per
   } finally {env.dom.window.close();}
 });
 
-test('current-video reminders hide in background, fullscreen, and while filtering is paused', async () => {
+test('current-video reminders appear over fullscreen but hide in background or while filtering is paused', async () => {
   const env=await reminderSetup({saved:{elapsedMs:61000}});
   try {
-    await env.tick();assert.equal(env.root.querySelector('#reminder').hidden,false);
-    await env.focus(false);assert.equal(env.root.querySelector('#reminder').hidden,true);
-    await env.focus(true);assert.equal(env.root.querySelector('#reminder').hidden,false);
-    await env.visibility(true);assert.equal(env.root.querySelector('#reminder').hidden,true);
-    await env.visibility(false);assert.equal(env.root.querySelector('#reminder').hidden,false);
-    await env.fullscreen(true);assert.equal(env.root.querySelector('#reminder').hidden,true);
+    await env.tick();assert.equal(!reminderOpen(env),false);
+    await env.focus(false);assert.equal(!reminderOpen(env),true);
+    await env.focus(true);assert.equal(!reminderOpen(env),false);
+    await env.visibility(true);assert.equal(!reminderOpen(env),true);
+    await env.visibility(false);assert.equal(!reminderOpen(env),false);
+    await env.fullscreen(true);assert.equal(reminderOpen(env),true);
     assert.equal(env.root.host.style.display,'none');
-    await env.fullscreen(false);assert.equal(env.root.querySelector('#reminder').hidden,false);
+    await env.fullscreen(false);assert.equal(!reminderOpen(env),false);
     env.root.querySelector('#pause').click();await sleep(20);
-    assert.equal(env.root.querySelector('#reminder').hidden,true);
+    assert.equal(!reminderOpen(env),true);
   } finally {env.dom.window.close();}
 });
 
@@ -524,7 +707,7 @@ test('stale watch metadata and late current-video results cannot prompt for a ne
     env.w.history.pushState({},'','/watch?v=xyzABC12345');
     env.w.document.dispatchEvent(new env.w.Event('yt-navigate-finish'));await sleep(20);
     release();await env.tick();
-    assert.equal(env.root.querySelector('#reminder').hidden,true);
+    assert.equal(!reminderOpen(env),true);
     assert.equal(env.messages.filter(m=>m.type==='CLASSIFY' && m.videos.some(v=>v.id==='xyzABC12345')).length,0,'Old renderer metadata must not classify the new URL');
   } finally {env.dom.window.close();}
 });
@@ -540,11 +723,11 @@ test('same-goal generation changes discard delayed current-video classifications
     await env.tick();assert.ok(release);
     generation=8;env.listeners[0]({type:'STATE_CHANGED'},{id:'test-extension'},()=>{});await sleep(20);
     release();await env.tick();
-    assert.equal(env.root.querySelector('#reminder').hidden,true);
+    assert.equal(!reminderOpen(env),true);
     const reads=env.messages.filter(message=>message.type==='GET_REMINDER_SESSION');
     assert.equal(reads.at(-1).reminderGeneration,8);
     await env.tick(1000,'pause');
-    assert.equal(env.root.querySelector('#reminder').hidden,true,'A new session must not inherit the previous session drift');
+    assert.equal(!reminderOpen(env),true,'A new session must not inherit the previous session drift');
   } finally {env.dom.window.close();}
 });
 

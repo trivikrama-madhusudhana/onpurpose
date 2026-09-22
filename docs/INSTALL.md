@@ -44,6 +44,12 @@ Your goal does not change just because you type a new YouTube search. Edit the g
 
 While watching a video, **Save video** saves its playback position. Click **Video saved** to undo that bookmark. **Saved videos** opens the list; **Settings** opens API key and usage controls. These are separate pages.
 
+## Turn OnPurpose on or off
+
+Click the OnPurpose toolbar icon and use its **On / Off** switch. You can also right-click the icon and choose **Turn OnPurpose off** or **Turn OnPurpose on**.
+
+Off removes the goal bar, labels and reminder popup, restores hidden videos, and stops new model requests. Requests in progress are aborted, but requests already sent may still be charged by the provider. Your key, goal, bookmarks, reminder delay and filtering pause state are saved. Turn it on again to restore that setup without refreshing YouTube. If filtering was paused, it stays paused.
+
 ## Update
 
 Download the new extension ZIP from [Releases](https://github.com/trivikrama-madhusudhana/onpurpose/releases/latest). Replace the files inside your existing extension folder with the new files. Keep the same folder path. Open `chrome://extensions`, click the reload arrow on the OnPurpose card, then refresh YouTube. Your saved key and bookmarks remain in Chrome storage. Do not remove and reinstall the extension just to update it.
@@ -52,7 +58,7 @@ Download the new extension ZIP from [Releases](https://github.com/trivikrama-mad
 
 | What you see | What to do |
 |---|---|
-| No goal bar | Refresh YouTube. Check that OnPurpose is enabled at `chrome://extensions` and that the address starts with `https://www.youtube.com/`. The popup also offers Refresh YouTube. |
+| No goal bar | Open the OnPurpose toolbar popup and check its On / Off switch. If it is on, refresh YouTube and check that the extension is enabled at `chrome://extensions`. The address must start with `https://www.youtube.com/`. |
 | “Manifest file is missing” | Extract the ZIP first. Select the folder that directly contains `manifest.json`. |
 | Settings keeps asking for a key | Save a key and check for an error message. Chrome profiles have separate settings. |
 | OpenRouter rejects the key | Open Settings and usage, paste the complete key again, and save it. Check OpenRouter if it was revoked. |
@@ -76,6 +82,8 @@ Reload OnPurpose at `chrome://extensions`, then open its settings again. If the 
 
 Open OnPurpose's **Settings**, the same page where you add your OpenRouter API key. Under **Goal reminders**, change the number and choose **Save reminder**. The default is 10 minutes. You can use any positive whole number, such as 1, 5 or 20. Zero, negative numbers and fractions are not accepted.
 
-This counts time spent watching clearly off-topic videos while YouTube has focus. The reminder waits for a browsing break and stays outside the video. Useful or uncertain videos do not trigger it.
+This counts time spent playing clearly off-topic videos while YouTube has focus. At the chosen delay, a centered popup appears over the video during playback, in normal view or fullscreen. The video keeps playing. Relevant and uncertain videos do not trigger it.
+
+Close the popup with **X** or **Esc** to start the timer again. Choose **This video helps** to mark the video relevant, **Back to my goal** to return to your last useful video, or **Keep exploring** to dismiss reminders for this goal session. **Resume reminders** starts a fresh timer after Keep exploring.
 
 Goal reminders currently work on regular YouTube watch pages. Shorts and videos with unreadable metadata do not trigger reminders.

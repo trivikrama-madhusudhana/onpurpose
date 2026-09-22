@@ -6,8 +6,18 @@ main { padding:20px; margin:0; max-width:none }
 header { margin:0; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 .brand { font-size: 18px; font-weight: 750; letter-spacing: -.04em; }
 .scope { font-size: 11px; color: var(--muted); border: 1px solid var(--border); padding: 3px 7px; border-radius: 20px; }
+.power { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-top: 18px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+#power-label { font-weight: 650; }
+#power-note { margin: 3px 0 0; }
+.power-switch { display: inline-flex; align-items: center; gap: 7px; padding: 8px 0 8px 6px; border: 0; flex: none; font-weight: 650; }
+.switch-track { display: block; width: 34px; height: 20px; padding: 3px; border-radius: 12px; background: var(--muted); }
+.switch-track::after { content: ''; display: block; width: 14px; height: 14px; border-radius: 50%; background: var(--surface); }
+.power-switch[aria-checked="true"] .switch-track { background: var(--accent); }
+.power-switch[aria-checked="true"] .switch-track::after { transform: translateX(14px); background: var(--accent-text); }
+#power-value { min-width: 22px; text-align: left; }
 h1 { font-size: 20px; line-height: 1.25; letter-spacing: -.02em; margin: 22px 0 12px; }
 textarea { display: block; resize: vertical; width: 100%; max-height: 180px; min-height: 86px; border: 1px solid var(--border); border-radius: 9px; padding: 11px; font: inherit; color: inherit; background: var(--surface); }
+textarea:disabled { opacity: .6; }
 button { cursor: pointer; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); padding: 8px 11px; font: inherit; }
 button:disabled { opacity: .5; cursor: default; }
 button.primary { display: block; width: 100%; margin-top: 10px; padding: 10px; background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 650; }

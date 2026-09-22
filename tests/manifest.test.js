@@ -5,7 +5,7 @@ const manifest=JSON.parse(fs.readFileSync(new URL('../manifest.json',import.meta
 test('content execution is limited to desktop YouTube HTTPS pages',()=>{
  assert.equal(manifest.manifest_version,3);
  assert.deepEqual(manifest.content_scripts.flatMap(c=>c.matches),['https://www.youtube.com/*']);
- assert.deepEqual(manifest.permissions,['storage']);
+ assert.deepEqual(manifest.permissions,['storage','contextMenus']);
  assert.deepEqual(manifest.host_permissions,['https://openrouter.ai/*','https://www.youtube.com/*']);
  assert.equal(manifest.content_scripts.some(c=>c.all_frames),false);
  assert.equal(manifest.externally_connectable,undefined);
@@ -22,4 +22,10 @@ test('toolbar opens a local popup with no broad tab or scripting permission',()=
  assert.equal(manifest.permissions.includes('tabs'),false);
  assert.equal(manifest.permissions.includes('activeTab'),false);
  assert.equal(manifest.permissions.includes('scripting'),false);
+});
+
+test('reminder dialog loads before the content controller',()=>{
+ const scripts=manifest.content_scripts[0].js;
+ assert.ok(scripts.includes('src/reminder-dialog.js'));
+ assert.ok(scripts.indexOf('src/reminder-dialog.js')<scripts.indexOf('src/content.js'));
 });

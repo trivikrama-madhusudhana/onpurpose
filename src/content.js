@@ -13,20 +13,31 @@
     // Use the same decision for the visible label and the default hide behaviour.
     return result?.label === 'tangent' && !shouldCollapse(result, false, false) ? 'unclear' : result?.label;
   }
+  function backToGoalURL(goal, useful) {
+    const video = typeof useful?.id === 'string' && videoURL(`https://www.youtube.com/watch?v=${encodeURIComponent(useful.id)}`);
+    const destination = new URL(video?.url || 'https://www.youtube.com/results');
+    if (video) { if (Number.isFinite(useful.timestamp) && useful.timestamp > 0) destination.searchParams.set('t', `${Math.floor(useful.timestamp)}s`); }
+    else destination.searchParams.set('search_query', goal);
+    return destination.href;
+  }
   // Pure helpers are also exercised by the local Node test suite.
-  if (typeof module !== 'undefined' && module.exports) module.exports = {videoURL, extractVideo, metadataKey, shouldCollapse, displayLabel, CARD_SELECTORS};
+  if (typeof module !== 'undefined' && module.exports) module.exports = {videoURL, extractVideo, metadataKey, shouldCollapse, displayLabel, backToGoalURL, CARD_SELECTORS};
   if (typeof document === 'undefined' || location.origin !== 'https://www.youtube.com' || window.top !== window || document.getElementById('onpurpose-root')) return;
 
-  let state = {goal: '', active: false, hasKey: false, saved: [], usage: {}};
-  let epoch = 0, busy = false, scanTimer, refreshTimer, destroyed = false;
+  let state = {enabled: true, goal: '', active: false, hasKey: false, saved: [], usage: {}};
+  let stateLoaded = false, epoch = 0, scanRequest = null, scanTimer, refreshTimer, destroyed = false;
   let showTangents = false, lastError = '', pending = 0, cooldownUntil = 0;
-  let mutationRevision = 0, readRevision = 0, mutationPending = false, draftDirty = false, draftRevision = 0;
+  let mutationRevision = 0, readRevision = 0, notificationRevision = 0, mutationPending = false, draftDirty = false, draftRevision = 0;
   let reminderSession = null, reminderSessionKey = '', reminderLoad = 0, reminderTimer;
+  let reminderDialog = null, reminderVisible = false;
   let watchRevision = 0, currentWatch = null, navigating = false, watchedURL = location.href, lastPersistAt = 0, persistedReminder = '';
   const decisions = new Map(), inflight = new Set(), records = new Map();
   const MAX_LOCAL_CACHE = 1500;
   const host = document.createElement('div');
   host.id = 'onpurpose-root';
+  // Stay out of page flow until the saved master switch has been read.
+  host.hidden = true;
+  host.style.display = 'none';
   const root = host.attachShadow({mode: 'open'});
   root.innerHTML = `
     <style>
@@ -35,7 +46,6 @@
       *{box-sizing:border-box}button,input{font:inherit}button{cursor:pointer;border:1px solid var(--line);border-radius:7px;min-height:36px;padding:7px 12px;background:var(--surface);color:var(--text);white-space:nowrap}button:hover{background:var(--hover)}button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}button:disabled{cursor:default;opacity:.6}input::placeholder{color:var(--muted);opacity:1}::selection{background:var(--accent);color:var(--on-accent)}
       .bar{padding:12px 20px;background:var(--surface);border-bottom:1px solid var(--line)}.goal-row{display:flex;gap:18px;align-items:center;min-width:0}.brand{display:flex;align-items:center;gap:9px;font-weight:750;font-size:16px;white-space:nowrap}.brand-mark{flex:none}.goal-form{display:flex;gap:8px;align-items:end;flex:1;min-width:0}.goal-field{flex:1;min-width:0}.goal-field label{display:block;font-size:12px;font-weight:650;margin-bottom:4px;color:var(--muted)}input{display:block;width:100%;min-width:0;background:var(--field);border:1px solid var(--line);border-radius:7px;padding:8px 10px;color:var(--text);caret-color:var(--text)}.primary{background:var(--accent);color:var(--on-accent);border-color:var(--accent);font-weight:650}.primary:hover{background:var(--accent);filter:brightness(.95)}
       .session-row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-top:10px}.actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.status{color:var(--muted);font-size:13px;display:flex;align-items:center;gap:8px;flex:1;min-width:200px}.status.error{color:var(--error)}.status button{min-height:30px;padding:3px 8px}.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--surface);color:var(--text);padding:12px 18px;border:1px solid var(--line);border-radius:10px;max-width:min(540px,90vw);box-shadow:0 6px 24px #0003;z-index:2200}.help-link{background:transparent}
-      .reminder{display:flex;align-items:center;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:12px;padding-top:12px}.reminder p{margin:0;flex:1;min-width:220px}.reminder-actions{display:flex;gap:8px;flex-wrap:wrap}
       [hidden]{display:none!important}@media(max-width:1050px){.goal-row{gap:12px}.bar{padding:12px 16px}.status{flex-basis:100%}.actions{width:100%}}@media(max-width:650px){.goal-row{display:block}.brand{display:flex;margin-bottom:8px}.goal-form{align-items:end}.actions{gap:6px}button{padding:7px 9px}}
     </style>
     <section class="bar" aria-label="OnPurpose YouTube focus">
@@ -46,12 +56,17 @@
         <div class="status" role="status" aria-live="polite"><span id="status-text">Connecting...</span><button id="retry" type="button" hidden>Retry</button></div>
         <div class="actions"><button id="pause" type="button">Resume filtering</button><button id="tangents" type="button" aria-pressed="false">Show off-topic</button><button id="save-video" type="button" aria-pressed="false" hidden>Save video</button><button id="resume-reminders" type="button" hidden>Resume reminders</button><button id="saved" type="button">Saved videos</button><button id="settings" class="help-link" type="button">Settings</button></div>
       </div>
-      <div class="reminder" id="reminder" hidden><p id="reminder-text" role="status" aria-live="polite"></p><div class="reminder-actions"><button class="primary" id="back-to-goal" type="button">Back to my goal</button><button id="video-helps" type="button">This video helps</button><button id="keep-exploring" type="button">Keep exploring</button></div></div>
     </section><div class="toast" role="status" hidden></div>`;
   const $ = selector => root.querySelector(selector);
   let layoutFrame = null;
+  function enabled() { return stateLoaded && state.enabled !== false; }
+  function syncVisibility() {
+    host.hidden = !enabled() || !!document.fullscreenElement;
+    host.style.display = host.hidden ? 'none' : '';
+  }
   function syncLayout() {
     layoutFrame = null;
+    if (!enabled() || destroyed) return;
     const page = document.querySelector('ytd-page-manager');
     const masthead = document.querySelector('ytd-masthead');
     const parentLeft = host.parentElement?.getBoundingClientRect().left || 0;
@@ -61,7 +76,7 @@
     host.style.setProperty('--onpurpose-header', `${headerHeight}px`);
     host.dataset.theme = document.documentElement.hasAttribute('dark') ? 'dark' : 'light';
   }
-  function scheduleLayout() { if (!layoutFrame) layoutFrame = requestAnimationFrame(syncLayout); }
+  function scheduleLayout() { if (enabled() && !destroyed && !layoutFrame) layoutFrame = requestAnimationFrame(syncLayout); }
   function mount() {
     const pageManager = document.querySelector('ytd-page-manager');
     if (pageManager?.parentElement) {
@@ -88,11 +103,13 @@
   }
   let toastTimer;
   function toast(message) {
+    if (!enabled() || destroyed) return;
     $('.toast').textContent = message; $('.toast').hidden = false;
     clearTimeout(toastTimer); toastTimer = setTimeout(() => { $('.toast').hidden = true; }, 4500);
   }
-  function ready() { return state.active && state.hasKey && !!state.goal.trim() && !lastError && !mutationPending; }
+  function ready() { return enabled() && !destroyed && state.active && state.hasKey && !!state.goal.trim() && !lastError && !mutationPending; }
   function render() {
+    syncVisibility();
     if (!draftDirty) $('#goal').value = state.goal;
     $('#pause').textContent = state.active ? 'Pause filtering' : 'Resume filtering';
     $('#pause').setAttribute('aria-pressed', String(!state.active));
@@ -133,17 +150,16 @@
       fullscreen:!!document.fullscreenElement, minutes:state.reminderMinutes, player};
   }
   function renderReminder(show) {
-    if (!reminderSession) { $('#reminder').hidden = true; $('#resume-reminders').hidden = true; return; }
+    if (!enabled() || !reminderSession || destroyed) { reminderVisible = false; reminderDialog?.update({show:false}); $('#resume-reminders').hidden = true; return; }
     const context = reminderContext();
-    if (show !== undefined) $('#reminder').hidden = !show;
-    if (!context.enabled || !context.visible || !context.focused || context.fullscreen || (context.page !== 'feed' && context.kind !== 'offTopic')) $('#reminder').hidden = true;
-    const message = `You came here to ${state.goal}. Still working on that?`;
-    if ($('#reminder-text').textContent !== message) $('#reminder-text').textContent = message;
-    $('#video-helps').hidden = context.page !== 'watch';
+    if (show !== undefined) reminderVisible = show;
+    if (!context.enabled || !context.visible || !context.focused || (context.page !== 'feed' && context.kind !== 'offTopic')) reminderVisible = false;
+    if (reminderVisible && !reminderDialog) reminderDialog = globalThis.OnPurposeReminderDialog?.create({onClose:resumeReminders,onBack:backToGoal,onHelpful:markHelpful,onExplore:keepExploring});
+    reminderDialog?.update({show:reminderVisible,goal:state.goal,canMarkHelpful:context.page === 'watch',player:context.player});
     $('#resume-reminders').hidden = !reminderSession.snapshot().dismissed || !state.goal;
   }
   function persistReminder(force = false) {
-    if (!reminderSession || !state.goal || (!force && Date.now() - lastPersistAt < 5000)) return;
+    if (!enabled() || !reminderSession || !state.goal || (!force && Date.now() - lastPersistAt < 5000)) return;
     const session = reminderSession.snapshot(), serialized = JSON.stringify(session);
     if (serialized === persistedReminder) return;
     lastPersistAt = Date.now(); persistedReminder = serialized;
@@ -154,6 +170,7 @@
   }
   function invalidateWatch() { watchRevision++; currentWatch = null; }
   async function ensureReminderSession() {
+    if (!enabled()) return;
     const key = JSON.stringify([state.goal, state.reminderGeneration || 0]);
     if (key === reminderSessionKey || !globalThis.OnPurposeReminders) return;
     reminderSessionKey = key; reminderSession = null; invalidateWatch(); persistedReminder = ''; lastPersistAt = 0;
@@ -162,7 +179,7 @@
     if (!state.goal) return;
     let saved = {};
     try { saved = (await send({type:'GET_REMINDER_SESSION',goal:state.goal,reminderGeneration:state.reminderGeneration || 0})).session || {}; } catch { /* Filtering still works if session storage is temporarily unavailable. */ }
-    if (load !== reminderLoad || destroyed) return;
+    if (load !== reminderLoad || destroyed || !enabled()) return;
     reminderSession = globalThis.OnPurposeReminders.createSession(saved);
     persistedReminder = JSON.stringify(reminderSession.snapshot());
     reminderTick(); scheduleScan();
@@ -198,7 +215,7 @@
     } catch { /* Uncertain current videos never start the clock or interrupt filtering. */ }
   }
   function reminderTick(naturalBreak = false) {
-    if (destroyed) return;
+    if (destroyed || !enabled()) return;
     if (location.href !== watchedURL) { persistReminder(true); watchedURL = location.href; invalidateWatch(); }
     if (!reminderSession) { renderReminder(); return; }
     const now = Date.now();
@@ -220,24 +237,22 @@
     if (context.kind === 'relevant' && currentWatch) reminderSession.rememberRelevant({id:currentWatch.id,title:currentWatch.title,url:currentWatch.url,timestamp:Math.max(0,Math.floor(context.player?.currentTime || 0))});
     renderReminder(result.show); persistReminder();
   }
-  $('#video-helps').addEventListener('click', () => {
+  function markHelpful() {
     const context = reminderContext();
     if (!reminderSession || !context.watchId || context.kind !== 'offTopic') return;
     reminderSession.markRelevant(context.watchId); reminderTick(); persistReminder(true); scheduleScan();
-  });
-  $('#keep-exploring').addEventListener('click', () => { reminderSession?.dismiss(); reminderTick(); persistReminder(true); });
-  $('#resume-reminders').addEventListener('click', () => { reminderSession?.resume(); reminderTick(); persistReminder(true); });
-  $('#back-to-goal').addEventListener('click', () => {
+  }
+  function keepExploring() { reminderSession?.dismiss(); reminderTick(); persistReminder(true); }
+  function resumeReminders() { reminderSession?.resume(); reminderTick(); persistReminder(true); }
+  $('#resume-reminders').addEventListener('click', resumeReminders);
+  function backToGoal() {
     if (!reminderSession) return;
     const useful = reminderSession.snapshot().lastRelevant;
     reminderSession.resume(); showTangents = false;
     for (const record of records.values()) record.revealed = false;
     restoreAll(); reminderTick(); persistReminder(true); render(); scheduleScan();
-    const destination = useful ? new URL(`https://www.youtube.com/watch?v=${encodeURIComponent(useful.id)}`) : new URL('https://www.youtube.com/results');
-    if (useful) { if (useful.timestamp > 0) destination.searchParams.set('t', `${Math.floor(useful.timestamp)}s`); }
-    else destination.searchParams.set('search_query', state.goal);
-    location.assign(destination.href);
-  });
+    location.assign(backToGoalURL(state.goal,useful));
+  }
   function restoreRecord(record) {
     record.card.classList.remove('onpurpose-collapsed');
     record.placeholder?.remove(); record.placeholder = null;
@@ -246,27 +261,45 @@
   function restoreAll() { for (const record of records.values()) restoreRecord(record); }
   function applyState(next) {
     if (!next || typeof next.goal !== 'string') return;
-    const changed = next.goal !== state.goal || !!next.active !== !!state.active || !!next.hasKey !== !!state.hasKey || (next.reminderGeneration || 0) !== (state.reminderGeneration || 0);
+    const wasEnabled = enabled();
+    const nextEnabled = next.enabled === undefined ? state.enabled : next.enabled !== false;
+    const changed = next.goal !== state.goal || !!next.active !== !!state.active || !!next.hasKey !== !!state.hasKey || (next.reminderGeneration || 0) !== (state.reminderGeneration || 0) || nextEnabled !== state.enabled;
+    if (wasEnabled && !nextEnabled) persistReminder(true);
     state = {...state, ...next};
+    stateLoaded = true;
     if (changed) { epoch++; invalidateWatch(); lastError = ''; cooldownUntil = 0; restoreAll(); for (const record of records.values()) record.revealed = false; }
+    if (!enabled()) {
+      clearTimeout(scanTimer); scanTimer = null;
+      clearInterval(reminderTimer); reminderTimer = null;
+      clearTimeout(toastTimer); $('.toast').hidden = true;
+      if (layoutFrame) cancelAnimationFrame(layoutFrame); layoutFrame = null;
+      // Detached requests may still resolve after the background cancels them.
+      // Their cleanup must not erase a fresh batch after reactivation.
+      scanRequest = null; inflight.clear(); pending = 0;
+      reminderLoad++; reminderSession?.resetClock();
+      if (!reminderSession) reminderSessionKey = '';
+      restoreAll();
+    } else if (!wasEnabled) {
+      reminderSession?.resetClock(); startReminderTimer(); scheduleLayout();
+    }
     ensureReminderSession(); reminderTick(); render(); scheduleScan();
   }
-  async function refreshState() {
-    if (mutationPending) return;
+  async function refreshState(fromNotification = false) {
+    if (mutationPending && !fromNotification) return;
     const mutationAtRead = mutationRevision, thisRead = ++readRevision;
     try {
       const next = await send({type: 'GET_STATE'});
-      if (mutationAtRead !== mutationRevision || thisRead !== readRevision || mutationPending || destroyed) return;
+      if (mutationAtRead !== mutationRevision || thisRead !== readRevision || (mutationPending && !fromNotification) || destroyed) return;
       applyState(next);
     } catch (error) {
-      if (mutationAtRead !== mutationRevision || thisRead !== readRevision || mutationPending || destroyed) return;
+      if (mutationAtRead !== mutationRevision || thisRead !== readRevision || (mutationPending && !fromNotification) || destroyed) return;
       lastError = error.message; restoreAll(); render();
     }
   }
   async function mutate(message) {
     // Even an identical goal changes the backend session revision. Invalidate old
     // classifications before sending the mutation, not after comparing states.
-    const thisMutation = ++mutationRevision, submittedDraft = draftRevision;
+    const thisMutation = ++mutationRevision, submittedDraft = draftRevision, notificationAtMutation = notificationRevision;
     reminderTick(); persistReminder(true);
     epoch++; readRevision++; mutationPending = true; lastError = ''; cooldownUntil = 0;
     invalidateWatch(); reminderSession?.resetClock();
@@ -277,7 +310,8 @@
       if (thisMutation !== mutationRevision || destroyed) return;
       mutationPending = false;
       if (message.type === 'SET_GOAL' && draftRevision === submittedDraft) draftDirty = false;
-      if (typeof next.goal === 'string') applyState(next); else await refreshState();
+      if (notificationAtMutation !== notificationRevision) await refreshState();
+      else if (typeof next.goal === 'string') applyState(next); else await refreshState();
     } catch (error) {
       if (thisMutation !== mutationRevision || destroyed) return;
       mutationPending = false; lastError = error.message; restoreAll(); render();
@@ -300,6 +334,7 @@
   $('#settings').addEventListener('click', openSettings);
   $('#saved').addEventListener('click', () => send({type:'OPEN_SAVED'}).catch(error => toast(error.message)));
   $('#save-video').addEventListener('click', async () => {
+    const requestEpoch = epoch;
     const parsed = videoURL(location.href);
     if (!parsed) return;
     const alreadySaved = state.saved.some(video => video.id === parsed.id);
@@ -307,6 +342,7 @@
     const player = document.querySelector('video');
     try {
       const response = await send(alreadySaved ? {type:'REMOVE_SAVED', id:parsed.id} : {type:'SAVE_FOR_LATER', video:{...parsed,title,timestamp:Math.floor(player?.currentTime || 0)}});
+      if (destroyed || !enabled() || requestEpoch !== epoch) return;
       applyState(response);
       toast(alreadySaved ? 'Removed from Saved videos.' : 'Video and playback position saved. Filtering is unchanged.');
     } catch (error) { toast(error.message); }
@@ -329,9 +365,12 @@
       const title = document.createElement('span'); title.className = 'onpurpose-hidden-title'; title.textContent = record.video.title;
       label.append(heading, title);
       const save = makeButton(state.saved.some(video => video.id === record.video.id) ? 'Saved' : 'Save for later', async () => {
+        const requestEpoch = epoch;
         const alreadySaved = state.saved.some(video => video.id === record.video.id);
         try {
-          applyState(await send(alreadySaved ? {type:'REMOVE_SAVED',id:record.video.id} : {type:'SAVE_FOR_LATER',video:record.video}));
+          const response = await send(alreadySaved ? {type:'REMOVE_SAVED',id:record.video.id} : {type:'SAVE_FOR_LATER',video:record.video});
+          if (destroyed || !enabled() || requestEpoch !== epoch) return;
+          applyState(response);
           toast(alreadySaved ? 'Removed from Saved videos.' : 'Saved for later. Open Saved videos to find it.');
           save.textContent = alreadySaved ? 'Save for later' : 'Saved';
           save.setAttribute('aria-pressed', String(!alreadySaved));
@@ -365,9 +404,9 @@
   function cards() {
     return getVideoCards(document);
   }
-  function scheduleScan() { if (destroyed || scanTimer) return; scanTimer = setTimeout(() => { scanTimer = null; scan(); }, 300); }
+  function scheduleScan() { if (destroyed || !enabled() || scanTimer) return; scanTimer = setTimeout(() => { scanTimer = null; scan(); }, 300); }
   async function scan() {
-    if (destroyed) return;
+    if (destroyed || !enabled()) return;
     mount(); scheduleLayout();
     for (const [card, record] of records) {
       if (!card.isConnected) { restoreRecord(record); records.delete(card); }
@@ -398,9 +437,10 @@
       }
       if (!result && !inflight.has(key) && nearViewport(card)) queue.set(video.id, {video, key});
     }
-    if (busy || !queue.size || Date.now() < cooldownUntil) return;
+    if (scanRequest || !queue.size || Date.now() < cooldownUntil) return;
     const batch = [...queue.values()].slice(0, 8), requestEpoch = epoch, goal = state.goal;
-    busy = true; pending = batch.length; batch.forEach(item => inflight.add(item.key)); render();
+    const request = {}; scanRequest = request;
+    pending = batch.length; batch.forEach(item => inflight.add(item.key)); render();
     try {
       const response = await send({type: 'CLASSIFY', goal, videos: batch.map(item => item.video)});
       if (epoch !== requestEpoch || state.goal !== goal || !ready()) return;
@@ -418,10 +458,13 @@
     } catch (error) {
       if (epoch === requestEpoch) { lastError = error.message; cooldownUntil = Date.now() + 30000; restoreAll(); }
     } finally {
-      batch.forEach(item => inflight.delete(item.key)); busy = false; pending = 0; render(); scheduleScan();
+      if (scanRequest === request) {
+        batch.forEach(item => inflight.delete(item.key)); scanRequest = null; pending = 0; render(); scheduleScan();
+      }
     }
   }
   const observer = new MutationObserver(mutations => {
+    if (!enabled() || destroyed) return;
     // YouTube may replace a renderer's classes or remove our decorations while
     // retaining the same video. Compare final state so our own paints do not loop.
     const repairNeeded = ready() && mutations.some(m => {
@@ -445,25 +488,25 @@
   window.addEventListener('focus', () => { reminderTick(); clearTimeout(refreshTimer); refreshTimer = setTimeout(refreshState, 100); });
   window.addEventListener('blur', () => { reminderTick(); reminderSession?.resetClock(); persistReminder(true); });
   document.addEventListener('visibilitychange', () => { reminderTick(); reminderSession?.resetClock(); persistReminder(true); if (!document.hidden) refreshState(); });
-  document.addEventListener('fullscreenchange', () => { host.style.display = document.fullscreenElement ? 'none' : ''; reminderTick(); });
+  document.addEventListener('fullscreenchange', () => { syncVisibility(); reminderTick(); });
   for (const event of ['pause','ended','play']) document.addEventListener(event, event => {
     if (event.target === reminderContext().player) reminderTick(event.type !== 'play');
   }, true);
-  const startReminderTimer = () => { clearInterval(reminderTimer); reminderTimer = setInterval(reminderTick, 1000); };
-  startReminderTimer();
+  const startReminderTimer = () => { clearInterval(reminderTimer); reminderTimer = enabled() ? setInterval(reminderTick, 1000) : null; };
   window.addEventListener('pagehide', () => {
     reminderTick(); persistReminder(true); reminderSession?.resetClock(); clearInterval(reminderTimer); reminderLoad++;
     destroyed = true; epoch++; mutationRevision++; readRevision++; mutationPending = false; observer.disconnect(); clearTimeout(scanTimer); scanTimer = null; clearTimeout(refreshTimer); restoreAll();
+    renderReminder();
   });
   window.addEventListener('pageshow', event => {
     if (!event.persisted) return;
-    destroyed = false; reminderSession?.resetClock(); if (!reminderSession) reminderSessionKey = ''; invalidateWatch(); startReminderTimer(); observePage(); refreshState(); scheduleScan();
+    destroyed = false; stateLoaded = false; syncVisibility(); renderReminder(); reminderSession?.resetClock(); if (!reminderSession) reminderSessionKey = ''; invalidateWatch(); observePage(); refreshState();
   });
   chrome.runtime.onMessage?.addListener((message, sender, sendResponse) => {
     if (sender.id !== chrome.runtime.id || message?.type !== 'STATE_CHANGED') return;
     // A toolbar submission can change the session revision even for the same goal.
-    epoch++; invalidateWatch(); lastError = ''; cooldownUntil = 0;
-    refreshState();
+    epoch++; notificationRevision++; invalidateWatch(); lastError = ''; cooldownUntil = 0;
+    refreshState(true);
     sendResponse({ok: true});
   });
   refreshState();

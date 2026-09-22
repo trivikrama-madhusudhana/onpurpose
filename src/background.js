@@ -38,8 +38,10 @@ function number(value) { return typeof value === 'number' && Number.isFinite(val
 
 /** Dependencies are injectable so tests never need a real account or network. */
 export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage = chromeAPI.storage.local) {
-  let state = { key: '', goal: '', active: false, saved: [], reminderMinutes: DEFAULT_REMINDER_MINUTES, reminderGeneration: 0, usage: { ...DEFAULT_USAGE } };
+  let state = { enabled: true, key: '', goal: '', active: false, saved: [], reminderMinutes: DEFAULT_REMINDER_MINUTES, reminderGeneration: 0, usage: { ...DEFAULT_USAGE } };
   let reminderTabs = {};
+  const requestControllers = new Set();
+  let powerUIQueue = Promise.resolve();
   let revision = 0;
   let keyRevision = 0;
   let mutation = Promise.resolve();
@@ -49,8 +51,9 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
   let running = 0;
   const ready = (async () => {
     await storage.setAccessLevel({ accessLevel: 'TRUSTED_CONTEXTS' });
-    const stored = await storage.get(['key', 'goal', 'active', 'saved', 'usage', 'reminderMinutes', 'reminderGeneration']);
+    const stored = await storage.get(['key', 'goal', 'active', 'saved', 'usage', 'reminderMinutes', 'reminderGeneration', 'enabled']);
     state = {
+      enabled: stored.enabled !== false,
       key: typeof stored.key === 'string' ? stored.key : '',
       goal: typeof stored.goal === 'string' ? stored.goal.slice(0, 1000) : '',
       active: stored.active === true,
@@ -64,9 +67,10 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
       const saved = await chromeAPI.storage.session.get('reminderTabs');
       reminderTabs = saved?.reminderTabs && typeof saved.reminderTabs === 'object' ? saved.reminderTabs : {};
     }
+    await syncPowerUI();
   })();
   function publicState() {
-    return { goal: state.goal, active: state.active, reminderMinutes: state.reminderMinutes, reminderGeneration: state.reminderGeneration, hasKey: Boolean(state.key), saved: state.saved.map(v => ({ ...v })), usage: { ...state.usage } };
+    return { enabled: state.enabled, goal: state.goal, active: state.active, reminderMinutes: state.reminderMinutes, reminderGeneration: state.reminderGeneration, hasKey: Boolean(state.key), saved: state.saved.map(v => ({ ...v })), usage: { ...state.usage } };
   }
   function trustedOptions(sender) {
     return sender?.id === chromeAPI.runtime.id && sender?.url === chromeAPI.runtime.getURL('src/options.html');
@@ -84,6 +88,43 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
     const result = mutation.then(fn);
     mutation = result.catch(() => {});
     return result;
+  }
+  function chromeCall(fn, ...args) {
+    return new Promise(resolve => {
+      try { fn(...args, () => { resolve(!chromeAPI.runtime.lastError); }); }
+      catch { resolve(false); }
+    });
+  }
+  function syncPowerUI() {
+    powerUIQueue = powerUIQueue.then(async () => {
+      const title = state.enabled ? 'Turn OnPurpose off' : 'Turn OnPurpose on';
+      const menus = chromeAPI.contextMenus;
+      if (menus?.update && menus?.create) {
+        const options = { title, contexts: ['action'] };
+        const updated = await chromeCall(menus.update.bind(menus), 'onpurpose-power', options);
+        if (!updated) await chromeCall(menus.create.bind(menus), { id: 'onpurpose-power', ...options });
+      }
+      if (chromeAPI.action?.setBadgeText) await chromeCall(chromeAPI.action.setBadgeText.bind(chromeAPI.action), { text: state.enabled ? '' : 'OFF' });
+      if (chromeAPI.action?.setTitle) await chromeCall(chromeAPI.action.setTitle.bind(chromeAPI.action), { title: state.enabled ? 'OnPurpose' : 'OnPurpose is off. Click to turn it on.' });
+    }).catch(() => {});
+    return powerUIQueue;
+  }
+  async function setEnabled(enabled) {
+    await ready;
+    return serialize(async () => {
+      const next = enabled === undefined ? !state.enabled : enabled;
+      if (typeof next !== 'boolean') throw new Error('Invalid OnPurpose switch setting.');
+      await write({ enabled: next });
+      revision++;
+      if (!next) {
+        for (const controller of requestControllers) controller.abort();
+        inFlight.clear();
+      }
+      await syncPowerUI();
+      // Tell any open extension popup as well as the YouTube content scripts.
+      try { await chromeAPI.runtime.sendMessage?.({ type: 'STATE_CHANGED' }); } catch { /* No extension page is open. */ }
+      return publicState();
+    });
   }
   async function saveReminderTabs(next) {
     const bounded = Object.fromEntries(Object.entries(next).slice(-50));
@@ -173,7 +214,7 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
   async function write(patch) {
     await storage.set(patch);
     Object.assign(state, patch);
-    if (['key', 'goal', 'active', 'saved', 'reminderMinutes', 'reminderGeneration'].some(field => Object.hasOwn(patch, field))) void notifyYouTubeTabs();
+    if (['key', 'goal', 'active', 'saved', 'reminderMinutes', 'reminderGeneration', 'enabled'].some(field => Object.hasOwn(patch, field))) void notifyYouTubeTabs();
   }
   function limited(fn) {
     if (queue.length >= 120) return Promise.reject(new Error('Too many pending videos. Try again shortly.'));
@@ -190,8 +231,9 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
     if (cache.has(cacheKey)) return { ...cache.get(cacheKey), cached: true };
     if (inFlight.has(cacheKey)) return inFlight.get(cacheKey);
     const promise = limited(async () => {
-      if (revision !== expectedRevision || keyRevision !== expectedKeyRevision || !state.active || state.goal !== goal) throw new Error('Session changed. Please retry.');
+      if (revision !== expectedRevision || keyRevision !== expectedKeyRevision || !state.enabled || !state.active || state.goal !== goal) throw new Error('Session changed. Please retry.');
       const controller = new AbortController();
+      requestControllers.add(controller);
       const timer = setTimeout(() => controller.abort(), 30000);
       let payload;
       try {
@@ -216,7 +258,7 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
           throw new Error('OpenRouter returned an error. Videos remain visible.');
         }
         try { payload = await response.json(); } catch { throw new Error('OpenRouter returned an invalid response.'); }
-      } finally { clearTimeout(timer); }
+      } finally { clearTimeout(timer); requestControllers.delete(controller); }
       // Account for a completed request even if the session changed or parsing fails.
       await serialize(async () => {
         const usage = {
@@ -235,13 +277,18 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
       return decision;
     });
     inFlight.set(cacheKey, promise);
-    try { return await promise; } finally { inFlight.delete(cacheKey); }
+    try { return await promise; } finally { if (inFlight.get(cacheKey) === promise) inFlight.delete(cacheKey); }
   }
   async function handle(message, sender) {
     if (!permitted(sender)) return { error: 'This extension works only on YouTube.' };
     try {
       await ready;
       if (!message || typeof message.type !== 'string') throw new Error('Invalid request.');
+      if (message.type === 'SET_ENABLED') {
+        if (!trustedPopup(sender) && !trustedOptions(sender)) throw new Error('Switch access denied.');
+        if (typeof message.enabled !== 'boolean') throw new Error('Invalid OnPurpose switch setting.');
+        return await setEnabled(message.enabled);
+      }
       if (message.type === 'GET_STATE') return publicState();
       if (message.type === 'OPEN_SAVED') return await openSaved();
       if (message.type === 'GET_POPUP_STATE') {
@@ -321,6 +368,7 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
         return publicState();
       });
       if (message.type === 'CLASSIFY') {
+        if (!state.enabled) throw new Error('OnPurpose is off. Turn it on from the extension icon.');
         if (!state.key) throw new Error('Add your OpenRouter API key in settings.');
         if (!state.active || !state.goal) throw new Error('Filtering is paused.');
         if (message.goal !== state.goal) throw new Error('Goal changed. Please retry.');
@@ -340,12 +388,15 @@ export function createController(chromeAPI, fetchAPI = globalThis.fetch, storage
       return { error: safe, results: [] };
     }
   }
-  return { handle, ready, forgetTab };
+  return { handle, ready, forgetTab, setEnabled, syncPowerUI };
 }
 
 if (globalThis.chrome?.runtime?.onMessage && globalThis.chrome?.storage?.local) {
   const controller = createController(chrome, globalThis.fetch, encryptedStorage(chrome.storage.local));
   controller.ready.catch(() => {});
+  chrome.contextMenus?.onClicked?.addListener(info => {
+    if (info.menuItemId === 'onpurpose-power') controller.setEnabled().catch(() => {});
+  });
   chrome.tabs?.onRemoved?.addListener(id => { controller.forgetTab(id).catch(() => {}); });
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     controller.handle(message, sender).then(sendResponse, () => sendResponse({ error: 'Request failed. Videos remain visible.' }));
